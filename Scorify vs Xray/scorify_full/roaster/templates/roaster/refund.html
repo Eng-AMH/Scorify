@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Refund Policy — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<style>
+.legal-wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 6rem}
+.legal-logo{display:flex;align-items:center;gap:10px;margin-bottom:3rem;text-decoration:none;color:var(--cream)}
+.legal-logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#ff6a3d,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.legal-logo-name{font-family:var(--font-d);font-size:1.3rem;letter-spacing:.05em}
+.legal-tag{display:inline-block;font-size:.7rem;font-family:var(--font-m);color:var(--smoke);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.75rem;background:rgba(255,255,255,.05);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.08)}
+.legal-title{font-family:var(--font-d);font-size:3rem;letter-spacing:.04em;margin-bottom:.5rem;background:linear-gradient(135deg,var(--fire),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.legal-updated{font-size:.8rem;color:var(--smoke);font-family:var(--font-m);margin-bottom:3rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.07)}
+.legal-section{margin-bottom:2.5rem}
+.legal-h{font-size:1.1rem;font-weight:700;color:var(--cream);margin-bottom:.875rem;display:flex;align-items:center;gap:.625rem}
+.legal-h::before{content:'';display:block;width:3px;height:1.2em;background:linear-gradient(135deg,var(--fire),var(--amber));border-radius:2px;flex-shrink:0}
+.legal-p{color:var(--smoke);font-size:.9rem;line-height:1.8;margin-bottom:.75rem}
+.legal-ul{color:var(--smoke);font-size:.9rem;line-height:1.8;margin-left:1.25rem;margin-bottom:.75rem}
+.legal-ul li{margin-bottom:.375rem}
+.highlight-green{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+.highlight-green .legal-h{color:#4ade80}
+.highlight-green .legal-h::before{background:#4ade80}
+.highlight-amber{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+.highlight-amber p{color:var(--cream);font-size:.875rem;margin:0}
+.steps{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1rem}
+.step{display:flex;gap:1rem;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:.875rem 1rem}
+.step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-text{font-size:.875rem;color:var(--cream);line-height:1.6}
+.step-text strong{color:var(--amber)}
+.legal-footer{border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;margin-top:3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.legal-footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.legal-footer-links a{font-size:.8rem;color:var(--smoke);text-decoration:none;transition:.2s}
+.legal-footer-links a:hover{color:var(--fire)}
+.page-utility-bar{position:fixed;top:1rem;right:1rem;z-index:260;display:flex;align-items:center;gap:.5rem}
+</style>
+</head>
+<body>
+
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+
+<div class="legal-wrap">
+
+ <a href="/" class="legal-logo">
+ <div class="legal-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>
+ <div class="legal-logo-name">Scorify</div>
+ </a>
+
+ <div class="legal-tag">Legal</div>
+ <div class="legal-title">REFUND POLICY</div>
+ <div class="legal-updated">Last updated: April 12, 2025 · Effective immediately</div>
+
+ <div class="highlight-amber">
+ <p>We want you to be happy with Scorify. If something goes wrong, we'll make it right. Read below to understand how our refunds work.</p>
+ </div>
+
+ <div class="legal-section highlight-green">
+ <div class="legal-h">✅ 7-Day Money-Back Guarantee</div>
+ <p class="legal-p" style="color:var(--cream)">If you subscribed to Pro or VIP and are not satisfied within the first <strong>7 days</strong> of your subscription, we will issue a full refund — no questions asked.</p>
+ <p class="legal-p" style="margin:0">Simply email us at <strong>{{ support_email }}</strong> within 7 days of your first payment.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">When Refunds Apply</div>
+ <ul class="legal-ul">
+ <li>Within 7 days of your first subscription payment (new subscribers only)</li>
+ <li>If you were charged twice due to a technical error</li>
+ <li>If our service was completely unavailable for more than 24 continuous hours during your billing period</li>
+ <li>If a feature you were specifically promised was not delivered</li>
+ </ul>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">When Refunds Do Not Apply</div>
+ <ul class="legal-ul">
+ <li>After 7 days from your first payment for that subscription period</li>
+ <li>For renewal charges (we send a reminder email 3 days before each renewal)</li>
+ <li>If you forgot to cancel before the renewal date</li>
+ <li>For partial months — subscriptions run for the full billing period</li>
+ <li>If your account was terminated for violating our Terms of Service</li>
+ <li>For the Free plan (it's free — no charges)</li>
+ </ul>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">How to Request a Refund</div>
+ <div class="steps">
+ <div class="step">
+ <div class="step-num">1</div>
+ <div class="step-text">Email us at <strong>{{ support_email }}</strong> with the subject line: <strong>"Refund Request"</strong></div>
+ </div>
+ <div class="step">
+ <div class="step-num">2</div>
+ <div class="step-text">Include your <strong>registered email address</strong> and the <strong>reason for the refund</strong> (optional but helpful)</div>
+ </div>
+ <div class="step">
+ <div class="step-num">3</div>
+ <div class="step-text">We'll reply within <strong>24 hours</strong> and process approved refunds within <strong>5-10 business days</strong> through Paddle</div>
+ </div>
+ </div>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">Cancellations</div>
+ <p class="legal-p">Canceling your subscription is different from requesting a refund. When you cancel:</p>
+ <ul class="legal-ul">
+ <li>Your subscription stops renewing</li>
+ <li>You keep Pro/VIP access until the end of your current billing period</li>
+ <li>No refund is issued for the remaining days unless within the 7-day window</li>
+ </ul>
+ <p class="legal-p">To cancel, go to <strong>Profile → Subscription → Cancel</strong>, or email us and we'll cancel it for you.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">Payment Processing</div>
+ <p class="legal-p">All payments are processed by <strong>Paddle</strong> (our Merchant of Record). Refunds are issued back to your original payment method. Paddle may take 5-10 business days to process the refund depending on your bank.</p>
+ <p class="legal-p">For Paddle-related billing issues, you can also contact Paddle support directly at <a href="https://paddle.com" style="color:var(--fire)">paddle.com</a>.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">Contact</div>
+ <p class="legal-p">Refund questions: <strong>{{ support_email }}</strong></p>
+ <p class="legal-p">We respond within 24 hours, Monday to Saturday.</p>
+ </div>
+
+ <div class="legal-footer">
+ <div style="font-size:.8rem;color:var(--dim)">© 2025 Scorify · All rights reserved</div>
+ <div class="legal-footer-links">
+ <a href="/terms/">Terms</a>
+ <a href="/privacy/">Privacy</a>
+ <a href="/refund/">Refund Policy</a>
+ <a href="/">← Home</a>
+ </div>
+ </div>
+
+</div>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+</body>
+</html>

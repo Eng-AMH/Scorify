@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terms of Service — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<style>
+.legal-wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 6rem}
+.legal-logo{display:flex;align-items:center;gap:10px;margin-bottom:3rem;text-decoration:none;color:var(--cream)}
+.legal-logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#ff6a3d,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.legal-logo-name{font-family:var(--font-d);font-size:1.3rem;letter-spacing:.05em}
+.legal-tag{display:inline-block;font-size:.7rem;font-family:var(--font-m);color:var(--smoke);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.75rem;background:rgba(255,255,255,.05);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.08)}
+.legal-title{font-family:var(--font-d);font-size:3rem;letter-spacing:.04em;margin-bottom:.5rem;background:linear-gradient(135deg,var(--fire),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.legal-updated{font-size:.8rem;color:var(--smoke);font-family:var(--font-m);margin-bottom:3rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.07)}
+.legal-section{margin-bottom:2.5rem}
+.legal-h{font-size:1.1rem;font-weight:700;color:var(--cream);margin-bottom:.875rem;display:flex;align-items:center;gap:.625rem}
+.legal-h::before{content:'';display:block;width:3px;height:1.2em;background:linear-gradient(135deg,var(--fire),var(--amber));border-radius:2px;flex-shrink:0}
+.legal-p{color:var(--smoke);font-size:.9rem;line-height:1.8;margin-bottom:.75rem}
+.legal-ul{color:var(--smoke);font-size:.9rem;line-height:1.8;margin-left:1.25rem;margin-bottom:.75rem}
+.legal-ul li{margin-bottom:.375rem}
+.legal-highlight{background:rgba(255,106,61,.07);border:1px solid rgba(255,106,61,.15);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem}
+.legal-highlight p{color:var(--cream);font-size:.875rem;margin:0}
+.legal-footer{border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;margin-top:3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.legal-footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.legal-footer-links a{font-size:.8rem;color:var(--smoke);text-decoration:none;transition:.2s}
+.legal-footer-links a:hover{color:var(--fire)}
+.page-utility-bar{position:fixed;top:1rem;right:1rem;z-index:260;display:flex;align-items:center;gap:.5rem}
+</style>
+</head>
+<body>
+
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+
+<div class="legal-wrap">
+
+ <a href="/" class="legal-logo">
+ <div class="legal-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>
+ <div class="legal-logo-name">Scorify</div>
+ </a>
+
+ <div class="legal-tag">Legal</div>
+ <div class="legal-title">TERMS OF SERVICE</div>
+ <div class="legal-updated">Last updated: April 12, 2025 · Effective immediately</div>
+
+ <div class="legal-highlight">
+ <p>By using Scorify, you agree to these terms. Please read them carefully. If you don't agree, please don't use our service.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">1. Who We Are</div>
+ <p class="legal-p">Scorify ("we", "our", or "the service") is an AI-powered CV analysis platform operated at <strong>{{ site_url }}</strong>. We help users improve their resumes through automated AI feedback.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">2. What We Offer</div>
+ <p class="legal-p">Scorify provides the following services:</p>
+ <ul class="legal-ul">
+ <li>AI-powered CV and document analysis</li>
+ <li>Resume scoring and feedback (ATS score, roast lines, improvement suggestions)</li>
+ <li>CV comparison tool (Pro/VIP)</li>
+ <li>ATS optimizer (Pro/VIP)</li>
+ <li>CV Builder with AI (Pro/VIP)</li>
+ <li>PDF export reports (Pro/VIP)</li>
+ <li>Career guidance and job matching</li>
+ </ul>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">3. Accounts and Registration</div>
+ <p class="legal-p">You may use basic features without an account. To access full features, you must create an account with a valid email address. You are responsible for:</p>
+ <ul class="legal-ul">
+ <li>Keeping your account credentials secure</li>
+ <li>All activity that occurs under your account</li>
+ <li>Providing accurate information during registration</li>
+ </ul>
+ <p class="legal-p">You must be at least 13 years old to use our service.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">4. Subscription Plans and Billing</div>
+ <p class="legal-p">We offer the following plans:</p>
+ <ul class="legal-ul">
+ <li><strong>Free:</strong> 3 CV analyses per day, basic feedback only</li>
+ <li><strong>Pro ($5/month):</strong> Unlimited analyses, full features including ATS optimizer, CV builder, and PDF export</li>
+ <li><strong>VIP ($15/month):</strong> All Pro features plus deep analysis, salary estimates, interview prep, and career roadmap</li>
+ </ul>
+ <p class="legal-p">Subscriptions are billed monthly through Paddle, our payment processor. You authorize us to charge your payment method on a recurring basis until you cancel.</p>
+ <p class="legal-p">Prices are displayed in USD. Paddle handles all currency conversions and tax compliance.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">5. Cancellations</div>
+ <p class="legal-p">You may cancel your subscription at any time from your account settings or by contacting us. Cancellation takes effect at the end of your current billing period — you keep access until then. We do not offer prorated refunds for partial months.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">6. Your Content</div>
+ <p class="legal-p">When you upload a CV or document, you grant us a limited, non-exclusive license to process that content solely for the purpose of providing our analysis service. We do not claim ownership of your content.</p>
+ <p class="legal-p">You represent that you have the right to upload any content you submit, and that it does not violate any laws or third-party rights.</p>
+ <p class="legal-p">Uploaded files are processed and immediately deleted from our servers. We do not permanently store your CV files — only the analysis results are saved to your account.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">7. Acceptable Use</div>
+ <p class="legal-p">You agree not to:</p>
+ <ul class="legal-ul">
+ <li>Upload malicious files, viruses, or harmful content</li>
+ <li>Attempt to reverse-engineer or scrape our AI system</li>
+ <li>Use automated tools to abuse our API or rate limits</li>
+ <li>Share your account with others to circumvent plan limits</li>
+ <li>Use our service for any illegal or fraudulent purpose</li>
+ <li>Upload content that violates third-party intellectual property rights</li>
+ </ul>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">8. AI Disclaimer</div>
+ <p class="legal-p">Our CV analysis is generated by AI (Groq / LLaMA) and is provided for informational purposes only. The feedback, scores, and suggestions are not professional career advice and may not be accurate in all cases.</p>
+ <p class="legal-p">We are not responsible for any hiring decisions, career outcomes, or actions taken based on our AI feedback. Always use your own judgment.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">9. Limitation of Liability</div>
+ <p class="legal-p">To the maximum extent permitted by law, Scorify is provided "as is" without warranties of any kind. We are not liable for:</p>
+ <ul class="legal-ul">
+ <li>Any indirect, incidental, or consequential damages</li>
+ <li>Loss of data, revenue, or business opportunities</li>
+ <li>Inaccuracies in AI-generated feedback</li>
+ <li>Service interruptions or downtime</li>
+ </ul>
+ <p class="legal-p">Our total liability to you will not exceed the amount you paid us in the 3 months prior to the claim.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">10. Changes to Terms</div>
+ <p class="legal-p">We may update these terms at any time. We will notify registered users by email for material changes. Continued use of the service after changes constitutes acceptance of the new terms.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">11. Contact</div>
+ <p class="legal-p">For any questions about these terms, contact us at: <strong>{{ support_email }}</strong></p>
+ </div>
+
+ <div class="legal-footer">
+ <div style="font-size:.8rem;color:var(--dim)">© 2025 Scorify · All rights reserved</div>
+ <div class="legal-footer-links">
+ <a href="/terms/">Terms</a>
+ <a href="/privacy/">Privacy</a>
+ <a href="/refund/">Refund Policy</a>
+ <a href="/">← Home</a>
+ </div>
+ </div>
+
+</div>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,725 @@
+/* ============================================================
+   shared.css — Scorify  |  AMH Systems
+   Loaded on EVERY page via base.html
+   Sections:
+     1. CSS Variables (3 modes + light overlays)
+     2. Reset & Base
+     3. Ambient Backgrounds (Xray / S×X)
+     4. Mode Transition & Selector
+     5. Navigation Bar
+     6. Mobile Nav Drawer (landing page)
+     7. Sidebar Toggle (inner pages)
+     8. Buttons
+     9. Badges
+    10. Score Colors
+    11. Loading Screen
+    12. Footer
+    13. Page Utility Bar
+    14. Brand Marks (logo icons)
+    15. Special Cards (S×X gate, card-sx)
+    16. Neon / Reveal / Tooltip
+    17. Inner Pages Layout (dashboard / profile / compare)
+    18. Responsive
+    19. Keyframes
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@300;400;600;700;800&family=DM+Mono:wght@400;500&family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. CSS VARIABLES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── Default: Scorify (fire + purple) ─── */
+:root {
+  --bg:      #09070f;
+  --bg2:     #130d1c;
+  --surface: rgba(255,255,255,.045);
+  --surface2:rgba(255,255,255,.08);
+  --a1:      #ff6a3d;
+  --a2:      #8b5cf6;
+  --a3:      #ff4fa3;
+  --fire:    #ff6a3d;
+  --amber:   #8b5cf6;
+  --cream:   #f7f5ff;
+  --smoke:   #a59db9;
+  --border:  rgba(255,255,255,.08);
+  --border2: rgba(139,92,246,.42);
+  --glow1:   rgba(255,106,61,.28);
+  --glow2:   rgba(139,92,246,.18);
+  --pro:     #3b82f6;
+  --font-d:  'Bebas Neue', sans-serif;
+  --font-b:  'Bricolage Grotesque', sans-serif;
+  --font-m:  'DM Mono', monospace;
+  --r:       16px;
+  --r-lg:    24px;
+  --t:       .3s cubic-bezier(.4,0,.2,1);
+  --ts:      .5s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ── Xray Mode (cyan + blue) ─── */
+body.xray-mode {
+  --bg:      #020711;
+  --bg2:     #081423;
+  --surface: rgba(0,212,255,.04);
+  --surface2:rgba(0,212,255,.08);
+  --a1:      #1dd9ff;
+  --a2:      #2775ff;
+  --a3:      #35c8ff;
+  --fire:    #1dd9ff;
+  --amber:   #2775ff;
+  --cream:   #e8f7ff;
+  --smoke:   #6a8ba8;
+  --border:  rgba(0,212,255,.11);
+  --border2: rgba(0,212,255,.42);
+  --glow1:   rgba(0,212,255,.32);
+  --glow2:   rgba(0,85,255,.2);
+  --font-d:  'Orbitron', sans-serif;
+  --font-b:  'Exo 2', sans-serif;
+}
+
+/* ── S×X Mode (purple + cyan) ─── */
+body.sx-mode {
+  --bg:      #05020b;
+  --bg2:     #12071c;
+  --surface: rgba(160,80,255,.05);
+  --surface2:rgba(160,80,255,.09);
+  --a1:      #b86cff;
+  --a2:      #20d6ff;
+  --a3:      #ff6ea8;
+  --fire:    #b86cff;
+  --amber:   #20d6ff;
+  --cream:   #f6f1ff;
+  --smoke:   #8e7ab0;
+  --border:  rgba(160,80,255,.14);
+  --border2: rgba(184,108,255,.44);
+  --glow1:   rgba(184,108,255,.3);
+  --glow2:   rgba(32,214,255,.16);
+  --font-d:  'Orbitron', sans-serif;
+  --font-b:  'Exo 2', sans-serif;
+}
+
+/* ── Light Mode overlay (stacks on top of mode) ─── */
+body.light-mode {
+  --bg: #f5f0eb; --bg2: #ede8e2;
+  --surface: rgba(0,0,0,.04); --surface2: rgba(0,0,0,.07);
+  --cream: #1a1208; --smoke: #6b5a4a;
+  --border: rgba(0,0,0,.09); --border2: rgba(139,92,246,.4);
+  --fire: #ff6a3d; --amber: #8b5cf6;
+}
+body.light-mode.xray-mode {
+  --bg: #f0f7ff; --bg2: #e8f3ff;
+  --cream: #0a1a2e; --smoke: #3a5f7a;
+  --border: rgba(0,100,180,.12); --border2: rgba(0,212,255,.4);
+  --fire: #1dd9ff; --amber: #2775ff;
+}
+body.light-mode.sx-mode {
+  --bg: #faf0ff; --bg2: #f5e8ff;
+  --cream: #1a0a2e; --smoke: #6a3a8a;
+  --border: rgba(130,50,200,.12); --border2: rgba(184,108,255,.4);
+  --fire: #b86cff; --amber: #20d6ff;
+}
+body.light-mode .sidebar,
+body.light-mode .modal,
+body.light-mode .auth-card,
+body.light-mode .otp-card { background: var(--bg2); }
+body.light-mode nav.scrolled { background: rgba(245,240,235,.95); }
+body.light-mode.xray-mode nav.scrolled { background: rgba(230,242,255,.95); }
+body.light-mode.sx-mode  nav.scrolled  { background: rgba(245,235,255,.95); }
+body.light-mode .demo-card { background: rgba(245,240,235,.97); }
+body.light-mode input,
+body.light-mode textarea { background: rgba(0,0,0,.04); color: var(--cream); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   2. RESET & BASE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html  { scroll-behavior: smooth; }
+body  {
+  font-family: var(--font-b);
+  background: var(--bg);
+  color: var(--cream);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background .5s ease, color .4s ease;
+}
+a      { color: inherit; text-decoration: none; }
+button { font-family: var(--font-b); }
+img    { max-width: 100%; }
+::selection  { background: var(--glow1); color: var(--cream); }
+:focus-visible { outline: 2px solid var(--a1); outline-offset: 3px; border-radius: 4px; }
+button, a, [role='button'], label { cursor: pointer; }
+input, textarea, select { cursor: text; }
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--a1); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   3. AMBIENT BACKGROUNDS
+   NOTE: These use ::before / ::after on <body> with
+   z-index:0 + pointer-events:none.
+   Content appears above them naturally — NO z-index hacks needed.
+   THE OLD RULE `body.xray-mode > * { position:relative; z-index:1 }`
+   HAS BEEN REMOVED. It broke position:sticky on .sidebar.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Xray: scanline grid */
+body.xray-mode::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,180,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,180,255,.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+body.xray-mode::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,212,255,.01) 3px, rgba(0,212,255,.01) 4px
+  );
+  animation: scanlines 14s linear infinite;
+}
+
+/* S×X: dual aura */
+body.sx-mode::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 20% 50%, rgba(255,77,0,.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 60% at 80% 50%, rgba(0,212,255,.06) 0%, transparent 70%);
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   4. MODE TRANSITION & SELECTOR
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.mode-changing,
+body.mode-changing * {
+  transition:
+    background .45s ease, border-color .4s ease,
+    color .35s ease, box-shadow .4s ease,
+    text-shadow .4s ease, fill .4s ease !important;
+}
+
+.mode-selector {
+  display: flex; align-items: center; gap: 3px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 99px; padding: 4px;
+  backdrop-filter: blur(20px);
+  transition: border-color .4s;
+}
+.mode-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: 99px;
+  font-family: var(--font-m); font-size: .62rem;
+  font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  cursor: pointer; border: 1px solid transparent;
+  color: var(--smoke); background: transparent;
+  transition: all .25s ease; white-space: nowrap; position: relative;
+}
+.mode-btn:hover { color: var(--cream); background: rgba(255,255,255,.06); }
+
+.mode-btn[data-mode="scorify"].active {
+  background: linear-gradient(135deg, rgba(255,77,0,.14), rgba(255,170,0,.08));
+  border-color: rgba(255,100,0,.55); color: #ff7020;
+  box-shadow: 0 0 18px rgba(255,77,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.mode-btn[data-mode="xray"].active {
+  background: linear-gradient(135deg, rgba(0,212,255,.11), rgba(0,85,255,.07));
+  border-color: rgba(0,212,255,.55); color: #00d4ff;
+  box-shadow: 0 0 18px rgba(0,212,255,.4), inset 0 1px 0 rgba(0,212,255,.1);
+}
+.mode-btn[data-mode="sx"].active {
+  background: linear-gradient(135deg, rgba(255,77,0,.08), rgba(0,212,255,.06), rgba(192,132,252,.1));
+  border-color: rgba(192,132,252,.6); color: #c084fc;
+  box-shadow: 0 0 22px rgba(192,132,252,.45), 0 0 50px rgba(244,114,182,.18),
+              inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+.mode-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
+}
+.mode-btn.active .mode-dot { animation: modeDotPulse 2s ease-in-out infinite; }
+.mode-pro-badge {
+  font-size: .5rem; padding: 1px 5px; border-radius: 99px;
+  background: linear-gradient(135deg, #ff4d00, #c084fc, #00d4ff);
+  color: #fff; font-family: var(--font-m); letter-spacing: .04em; font-weight: 900;
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   5. NAVIGATION BAR  (landing page only — fixed at top)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem clamp(1.5rem,4vw,3rem);
+  transition: .4s; gap: 1rem;
+}
+nav.scrolled {
+  background: rgba(10,8,4,.93);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  padding: .85rem clamp(1.5rem,4vw,3rem);
+}
+body.xray-mode nav.scrolled { background: rgba(2,8,16,.94); }
+body.sx-mode   nav.scrolled { background: rgba(7,3,14,.94); }
+
+.nav-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.nav-logo-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; animation: iconPulse 3s ease-in-out infinite;
+  transition: all .5s ease;
+}
+.nav-logo-text {
+  font-family: var(--font-d); font-size: 1.25rem;
+  letter-spacing: .05em; transition: all .4s ease;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 2rem;
+  list-style: none; flex: 1; justify-content: center;
+}
+.nav-links a { font-size: .875rem; color: var(--smoke); transition: var(--t); letter-spacing: .02em; }
+.nav-links a:hover { color: var(--cream); }
+.nav-cta { display: flex; align-items: center; gap: 10px; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   6. MOBILE NAV DRAWER  (landing page only — slides from right)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Burger button — hidden on desktop, shown on mobile */
+.nav-burger {
+  display: none;
+  flex-direction: column; justify-content: center;
+  align-items: center; gap: 5px;
+  width: 40px; height: 40px; border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.05);
+  cursor: pointer; flex-shrink: 0;
+  transition: border-color .25s, background .25s;
+  z-index: 210;
+}
+.nav-burger:hover { border-color: var(--border2); background: rgba(255,255,255,.09); }
+.nav-burger span {
+  display: block; width: 18px; height: 2px;
+  border-radius: 2px; background: var(--cream);
+  transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .25s, width .3s;
+}
+.nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; width: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Drawer overlay */
+.nav-drawer-overlay {
+  display: none; position: fixed; inset: 0; z-index: 195;
+  background: rgba(0,0,0,.65); backdrop-filter: blur(4px);
+  opacity: 0; transition: opacity .3s;
+}
+.nav-drawer-overlay.open { opacity: 1; }
+
+/* Drawer panel */
+.nav-drawer {
+  display: none; position: fixed;
+  top: 0; right: 0; width: min(320px,88vw); height: 100vh;
+  z-index: 196; background: var(--bg2);
+  border-left: 1px solid var(--border);
+  box-shadow: -20px 0 60px rgba(0,0,0,.5);
+  transform: translateX(105%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  overflow-y: auto;
+}
+.nav-drawer.open { transform: translateX(0); }
+
+.nav-drawer-inner {
+  display: flex; flex-direction: column;
+  padding: 5rem 1.5rem 2rem; min-height: 100%;
+}
+.nav-drawer-links { display: flex; flex-direction: column; gap: 2px; }
+.nav-drawer-link {
+  display: block; padding: 13px 14px; border-radius: 12px;
+  font-size: 1rem; font-weight: 600; color: var(--smoke);
+  transition: background .2s, color .2s; border: 1px solid transparent;
+}
+.nav-drawer-link:hover { color: var(--cream); background: rgba(255,255,255,.06); border-color: var(--border); }
+.nav-drawer-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+.nav-drawer-actions { display: flex; flex-direction: column; gap: .65rem; }
+.nav-drawer-bottom {
+  margin-top: auto; padding-top: 1.5rem;
+  display: flex; flex-direction: column; gap: .75rem;
+}
+.nav-drawer-theme {
+  background: none; border: 1px solid var(--border);
+  border-radius: 10px; color: var(--smoke);
+  padding: 8px 14px; font-size: .85rem;
+  font-family: var(--font-b); cursor: pointer; width: 100%;
+  text-align: left; transition: border-color .2s, color .2s;
+}
+.nav-drawer-theme:hover { border-color: var(--border2); color: var(--cream); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   7. SIDEBAR TOGGLE  (inner pages: dashboard / profile / compare)
+   Shown only on mobile via the .sidebar-toggle button
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.sidebar-toggle {
+  position: fixed; top: 1rem; left: 1rem; z-index: 275;
+  display: none; /* flex on ≤900px — see responsive section */
+  width: 42px; height: 42px; border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.06);
+  color: var(--cream); cursor: pointer;
+  align-items: center; justify-content: center;
+  font-size: 1.25rem; line-height: 1;
+  box-shadow: 0 10px 26px rgba(0,0,0,.22); transition: .25s;
+}
+.sidebar-toggle:hover { border-color: var(--border2); color: var(--a1); }
+
+/* Semi-transparent overlay behind open sidebar on mobile */
+.sidebar-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(10,8,4,.62);
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.sidebar-overlay.active { opacity: 1; pointer-events: all; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   8. BUTTONS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: 10px 22px; border-radius: 12px;
+  font-weight: 700; font-size: .875rem; cursor: pointer;
+  transition: var(--ts); border: none; white-space: nowrap;
+}
+.btn-lg { padding: 14px 32px; font-size: 1rem; border-radius: 14px; }
+
+.btn-fire {
+  background: linear-gradient(135deg, var(--a1), var(--a2));
+  color: #060402; box-shadow: 0 4px 20px var(--glow1);
+}
+.btn-fire:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 32px var(--glow1), 0 0 60px var(--glow2); }
+body.xray-mode .btn-fire { color: #020810; }
+body.sx-mode   .btn-fire { color: #07030e; }
+
+.btn-ghost {
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border); color: var(--smoke);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--cream); background: rgba(255,255,255,.09); }
+
+.btn-pro  { background: linear-gradient(135deg, var(--pro), #6366f1); color: #fff; box-shadow: 0 4px 20px rgba(59,130,246,.3); }
+.btn-pro:hover  { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(59,130,246,.5); }
+
+.btn-vip  { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #0a0804; box-shadow: 0 4px 20px rgba(245,158,11,.3); }
+.btn-vip:hover  { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(245,158,11,.5); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   9. BADGES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 99px;
+  font-size: .65rem; font-weight: 700;
+  font-family: var(--font-m); letter-spacing: .05em;
+}
+.badge-free { background: rgba(100,116,139,.15); color: #94a3b8; border: 1px solid rgba(100,116,139,.3); }
+.badge-pro  { background: rgba(59,130,246,.15);  color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+.badge-vip  { background: rgba(255,77,0,.15);    color: var(--a1); border: 1px solid var(--border2); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   10. SCORE COLORS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.sc-fire  { color: #f87171; }
+.sc-amber { color: var(--a2); }
+.sc-green { color: #4ade80; }
+.bg-fire  { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.25); }
+.bg-amber { background: rgba(255,170,0,.1);   border: 1px solid rgba(255,170,0,.25); }
+.bg-green { background: rgba(74,222,128,.1);  border: 1px solid rgba(74,222,128,.22); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   11. LOADING SCREEN
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.loading {
+  position: fixed; inset: 0;
+  background: rgba(10,8,4,.92); backdrop-filter: blur(12px);
+  z-index: 998; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1.5rem;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.loading.show { opacity: 1; pointer-events: all; }
+.loading-fire  { width: 72px; height: 72px; border-radius: 18px; font-size: 2.1rem; animation: bounce 1s ease-in-out infinite; }
+.loading-title { font-family: var(--font-d); font-size: 2rem; letter-spacing: .1em; color: var(--a1); }
+.loading-sub   { font-family: var(--font-m); font-size: .78rem; color: var(--smoke); letter-spacing: .15em; text-transform: uppercase; }
+.loading-bar   { width: 240px; height: 4px; background: rgba(255,255,255,.06); border-radius: 2px; overflow: hidden; }
+.loading-bar-fill { height: 100%; background: linear-gradient(90deg, var(--a1), var(--a2)); border-radius: 2px; animation: loadAnim 1.8s ease-in-out infinite; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   12. FOOTER
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+footer {
+  width: min(100%, 1300px); margin: 0 auto;
+  padding: 2.5rem clamp(1.5rem,5vw,4rem) 3rem;
+  display: flex; flex-direction: column;
+  align-items: center; gap: .95rem; text-align: center;
+}
+.footer-brand, .legal-brand, .auth-logo, .otp-logo {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-d); letter-spacing: .05em;
+}
+.footer-brand, .legal-brand { font-size: 1.08rem; }
+.footer-links {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center; gap: 1.25rem;
+  color: var(--smoke); font-family: var(--font-b); font-size: .9rem;
+}
+.footer-links a { color: var(--smoke); transition: color .2s, transform .2s; }
+.footer-links a:hover { color: var(--cream); transform: translateY(-1px); }
+.footer-copy { font-family: var(--font-m); font-size: .72rem; color: var(--smoke); letter-spacing: .08em; text-transform: uppercase; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   13. PAGE UTILITY BAR  (theme + lang buttons, top-right)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.page-utility-bar {
+  position: fixed; top: 1rem; right: 1rem;
+  z-index: 260; display: flex; align-items: center; gap: .5rem;
+}
+body[dir="rtl"] .page-utility-bar { right: auto; left: 1rem; flex-direction: row-reverse; }
+.page-utility-bar #themeBtn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.05); color: var(--smoke);
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center; transition: .25s;
+}
+.page-utility-bar #themeBtn:hover { border-color: var(--border2); color: var(--cream); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   14. BRAND MARKS  (logo icons used site-wide)
+   Uses <img class="mode-logo-img"> — src swapped by mode.js
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Shared structure */
+.nav-logo-icon, .auth-brand-mark, .auth-logo-icon,
+.sb-logo-icon, .otp-logo-icon, .footer-logo-icon,
+.legal-logo-icon, .loading-fire {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; overflow: hidden; position: relative;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  will-change: transform;
+  transition: box-shadow .5s ease, filter .5s ease;
+}
+
+/* The actual logo image */
+.mode-logo-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(255,106,61,.5));
+  transition: filter .5s ease;
+}
+
+/* ── Mode-specific glows on the image ── */
+body.scorify-mode .mode-logo-img,
+body:not(.xray-mode):not(.sx-mode) .mode-logo-img {
+  filter: drop-shadow(0 0 14px rgba(255,106,61,.6))
+          drop-shadow(0 0 28px rgba(139,92,246,.3));
+}
+body.xray-mode .mode-logo-img {
+  filter: drop-shadow(0 0 14px rgba(0,212,255,.8))
+          drop-shadow(0 0 28px rgba(0,85,255,.4));
+}
+body.sx-mode .mode-logo-img {
+  filter: drop-shadow(0 0 14px rgba(184,108,255,.7))
+          drop-shadow(0 0 28px rgba(32,214,255,.4));
+}
+
+/* ── Pulse animation on nav icon ── */
+.nav-logo-icon { animation: iconPulse 3s ease-in-out infinite; }
+@keyframes iconPulse {
+  0%,100% { filter: drop-shadow(0 0 8px rgba(255,106,61,.4)); }
+  50%     { filter: drop-shadow(0 0 22px rgba(255,106,61,.8)) drop-shadow(0 0 44px rgba(139,92,246,.4)); }
+}
+body.xray-mode .nav-logo-icon { animation: iconPulseXray 3s ease-in-out infinite; }
+@keyframes iconPulseXray {
+  0%,100% { filter: drop-shadow(0 0 8px rgba(0,212,255,.5)); }
+  50%     { filter: drop-shadow(0 0 22px rgba(0,212,255,.9)) drop-shadow(0 0 44px rgba(0,85,255,.5)); }
+}
+body.sx-mode .nav-logo-icon { animation: iconPulseSx 3s ease-in-out infinite; }
+@keyframes iconPulseSx {
+  0%,100% { filter: drop-shadow(0 0 8px rgba(184,108,255,.5)); }
+  50%     { filter: drop-shadow(0 0 22px rgba(184,108,255,.9)) drop-shadow(0 0 44px rgba(32,214,255,.4)); }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   15. SPECIAL CARDS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* S×X Pro Gate */
+.sx-gate { position: relative; }
+.sx-gate-overlay {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; background: rgba(7,3,14,.84);
+  backdrop-filter: blur(10px); border-radius: inherit; padding: 2rem; text-align: center;
+  border: 1px solid rgba(192,132,252,.2);
+}
+.sx-gate-icon  { font-size: 2.5rem; filter: drop-shadow(0 0 16px rgba(192,132,252,.7)); }
+.sx-gate-title {
+  font-family: var(--font-d); font-size: 1.1rem; letter-spacing: .08em;
+  background: linear-gradient(135deg, #ff4d00, #c084fc, #00d4ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.sx-gate-sub { font-size: .78rem; color: #8060aa; font-family: var(--font-m); letter-spacing: .06em; max-width: 260px; line-height: 1.6; }
+.sx-blurred  { filter: blur(5px); pointer-events: none; user-select: none; transition: filter .3s; }
+
+/* S×X animated border card */
+.card-sx { position: relative; border-radius: var(--r-lg); overflow: hidden; background: var(--surface); }
+.card-sx::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; z-index: 0;
+  background: linear-gradient(135deg, #ff4d00, #c084fc, #00d4ff, #c084fc, #ff4d00);
+  background-size: 400% 400%; animation: sxBorder 5s ease-in-out infinite;
+}
+.card-sx > * { position: relative; z-index: 1; }
+.card-sx-inner { background: var(--bg2); border-radius: calc(var(--r-lg) - 1px); padding: 2rem; }
+@keyframes sxBorder { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   16. NEON TEXT / REVEAL / TOOLTIP
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.xray-mode .neon-text {
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0,212,255,.9), 0 0 20px rgba(0,212,255,.6), 0 0 40px rgba(0,212,255,.3);
+}
+body.sx-mode .neon-text {
+  background: linear-gradient(135deg, #ff4d00, #c084fc, #00d4ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(192,132,252,.5));
+}
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s cubic-bezier(.4,0,.2,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.rd1{transition-delay:.05s} .rd2{transition-delay:.15s} .rd3{transition-delay:.25s}
+.rd4{transition-delay:.35s} .rd5{transition-delay:.45s}
+.scale{transform:scale(.97)} .scale.visible{transform:scale(1)}
+
+[data-tooltip] { position: relative; cursor: help; }
+[data-tooltip]::after {
+  content: attr(data-tooltip); position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%) scale(.9); background: var(--bg2);
+  border: 1px solid var(--border2); border-radius: 8px; padding: 6px 12px;
+  font-size: .72rem; font-family: var(--font-m); color: var(--cream); white-space: nowrap;
+  pointer-events: none; opacity: 0; transition: opacity .2s, transform .2s;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 999;
+}
+[data-tooltip]:hover::after { opacity: 1; transform: translateX(-50%) scale(1); }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   17. INNER PAGES LAYOUT  (dashboard / profile / compare)
+
+   THE FIX:
+   • body = display:flex + height:100vh + overflow:hidden
+   • .sidebar = position:sticky (NOT fixed) → stays in the flex flow
+     height:100vh so it fills the container
+   • .main = flex:1 + overflow-y:auto → scrolls independently
+
+   This eliminates the need for margin-left and position:fixed,
+   which was the root cause of the gap in Xray/S×X modes.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.dashboard-page,
+body.profile-page,
+body.compare-page {
+  display: flex;
+  align-items: stretch;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   18. RESPONSIVE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 900px) {
+  .sidebar-toggle { display: flex; }
+}
+
+@media (max-width: 768px) {
+  /* Landing nav: hide links, show burger */
+  .nav-links { display: none; }
+  .nav-cta .btn-ghost,
+  .nav-cta #globeWrapNav,
+  .nav-cta #themeBtn,
+  .nav-cta #navModeBtn,
+  .nav-cta .mode-selector { display: none; }
+  .nav-burger { display: flex; }
+  .nav-drawer, .nav-drawer-overlay { display: block; }
+  nav { padding: .85rem 1rem; gap: .5rem; }
+  .nav-logo-text { font-size: 1.1rem; }
+
+  /* Mode selector scaling */
+  .mode-selector { gap: 2px; padding: 3px; }
+  .mode-btn { padding: 5px 10px; font-size: .58rem; letter-spacing: .07em; }
+  .mode-pro-badge { display: none; }
+
+  /* Footer */
+  footer { padding-inline: 1rem; }
+  .footer-links { gap: .9rem; }
+
+  /* Utility bar */
+  .page-utility-bar { top: .75rem; right: .75rem; transform: scale(.95); transform-origin: top right; }
+
+  /* Inner pages: revert to block layout so sidebar can slide in from left */
+  body.dashboard-page,
+  body.profile-page,
+  body.compare-page {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   19. KEYFRAMES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@keyframes scanlines   { from{background-position:0 0}    to{background-position:0 100vh} }
+@keyframes loadAnim    { 0%{width:0;opacity:.6} 50%{width:70%;opacity:1} 100%{width:100%;opacity:.6} }
+@keyframes bounce      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes modeDotPulse{ 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(1.6)} }
+@keyframes fadeUp      { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideIn     { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+@keyframes blink       { 0%,100%{opacity:1} 50%{opacity:.1} }

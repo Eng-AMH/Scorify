@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blog — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<style>
+.blog-wrap{max-width:900px;margin:0 auto;padding:2rem 1.25rem}
+.blog-title{font-family:var(--font-d);font-size:2.5rem;color:var(--cream);letter-spacing:.05em;margin-bottom:.25rem}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;margin-top:1.5rem}
+.blog-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.2s;text-decoration:none;display:flex;flex-direction:column}
+.blog-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.blog-cover{height:140px;background:linear-gradient(135deg,rgba(255,106,61,.15),rgba(139,92,246,.1));display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+.blog-body{padding:1rem;flex:1;display:flex;flex-direction:column}
+.blog-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.625rem}
+.blog-tag{font-size:.68rem;padding:2px 8px;border-radius:99px;border:1px solid var(--border);color:var(--smoke)}
+.blog-h{font-size:.95rem;font-weight:700;color:var(--cream);margin-bottom:.375rem;line-height:1.4}
+.blog-excerpt{font-size:.8rem;color:var(--smoke);line-height:1.6;flex:1}
+.blog-meta{display:flex;justify-content:space-between;font-size:.7rem;color:var(--dim);margin-top:.75rem;font-family:var(--font-m)}
+.empty-blog{text-align:center;padding:4rem 2rem;color:var(--smoke)}
+</style>
+</head>
+<body style="background:var(--bg);min-height:100vh">
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<div class="blog-wrap">
+ <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:.25rem">
+ <div>
+ <a href="/" style="color:var(--smoke);text-decoration:none;font-size:.82rem">← Home</a>
+ </div>
+ {% if profile %}
+ <a href="/dashboard/" style="padding:8px 18px;border-radius:10px;border:1px solid var(--border);color:var(--smoke);text-decoration:none;font-size:.82rem">Dashboard</a>
+ {% else %}
+ <a href="/login/" style="padding:8px 18px;border-radius:10px;border:1px solid var(--border);color:var(--smoke);text-decoration:none;font-size:.82rem">Sign In</a>
+ {% endif %}
+ </div>
+
+ <div class="blog-title">📝 BLOG</div>
+ <div style="color:var(--smoke);font-size:.88rem">Career tips, CV guides, and AI insights</div>
+
+ {% if tag %}
+ <div style="margin-top:.75rem;display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--smoke)">
+ Filtered by: <span style="background:rgba(255,106,61,.12);color:var(--fire);padding:2px 10px;border-radius:99px">{{ tag }}</span>
+ <a href="/blog/" style="color:var(--smoke);font-size:.78rem">X Clear</a>
+ </div>
+ {% endif %}
+
+ {% if posts %}
+ <div class="blog-grid">
+ {% for post in posts %}
+ <a href="/blog/{{ post.slug }}/" class="blog-card">
+ {% if post.cover_image %}
+ <div class="blog-cover" style="background-image:url({{ post.cover_image.url }});background-size:cover;background-position:center"></div>
+ {% else %}
+ <div class="blog-cover">📄</div>
+ {% endif %}
+ <div class="blog-body">
+ {% if post.tag_list %}
+ <div class="blog-tags">{% for t in post.tag_list %}<span class="blog-tag">{{ t }}</span>{% endfor %}</div>
+ {% endif %}
+ <div class="blog-h">{{ post.title }}</div>
+ {% if post.excerpt %}<div class="blog-excerpt">{{ post.excerpt|truncatechars:100 }}</div>{% endif %}
+ <div class="blog-meta">
+ <span>{{ post.created_at|date:"M d, Y" }}</span>
+ <span>{{ post.read_time }} min read · {{ post.view_count }} views</span>
+ </div>
+ </div>
+ </a>
+ {% endfor %}
+ </div>
+ {% else %}
+ <div class="empty-blog">
+ <div style="font-size:3rem;margin-bottom:.75rem">📝</div>
+ <div style="font-size:1.1rem;font-weight:700;color:var(--cream);margin-bottom:.25rem">No posts yet</div>
+ <div>Check back soon for CV tips and career guides!</div>
+ </div>
+ {% endif %}
+</div>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

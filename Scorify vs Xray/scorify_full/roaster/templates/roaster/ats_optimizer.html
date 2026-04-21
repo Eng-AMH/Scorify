@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATS Optimizer — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/dashboard.css' %}">
+<style>
+.score-change{display:flex;align-items:center;gap:1rem;justify-content:center;margin:1rem 0}
+.score-box{text-align:center;padding:1rem 1.5rem;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.score-arrow{font-size:1.5rem;color:var(--smoke)}
+.kw-found{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);border-radius:10px;padding:.625rem .875rem;margin-bottom:.625rem;font-size:.82rem}
+.kw-missing{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:.625rem .875rem;margin-bottom:.625rem;font-size:.82rem}
+.bullet-pair{background:rgba(255,255,255,.03);border-radius:10px;padding:.875rem;margin-bottom:.625rem}
+.bullet-orig{font-size:.82rem;color:var(--smoke);margin-bottom:.375rem;padding-bottom:.375rem;border-bottom:1px solid var(--border)}
+.bullet-new{font-size:.82rem;color:#4ade80}
+.spin{display:none;width:32px;height:32px;border:3px solid rgba(255,106,61,.2);border-top-color:var(--fire);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Open navigation menu" aria-expanded="false">⋮</button>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<aside class="sidebar">
+ <a href="/" class="sb-logo"><div class="sb-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>Scorify</a>
+ <a href="/profile/" class="sb-user">
+ <div class="sb-avatar">{% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="">{% else %}{{ request.user.username|first|upper }}{% endif %}</div>
+ <div style="flex:1;min-width:0"><div class="sb-user-name">{{ request.user.username }}</div><div class="sb-user-plan"><span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span></div></div>
+ </a>
+ <nav class="sb-nav">
+ <a href="/dashboard/" class="sb-link"><span class="sb-icon">📊</span> Dashboard</a>
+ <a href="/ats-optimizer/" class="sb-link active"><span class="sb-icon">🤖</span> ATS Optimizer</a>
+ <a href="/cv-builder/" class="sb-link"><span class="sb-icon">🏗️</span> CV Builder</a>
+ <a href="/compare/" class="sb-link"><span class="sb-icon">⚖️</span> Compare CVs</a>
+ <a href="/referral/" class="sb-link"><span class="sb-icon">🤝</span> Referrals</a>
+ </nav>
+ <a href="/logout/" class="sb-link" style="margin-top:.5rem;color:#f87171"><span class="sb-icon">🚪</span> Logout</a>
+</aside>
+
+<main class="main">
+ <div class="topbar">
+ <div class="topbar-title">🤖 ATS OPTIMIZER</div>
+ <span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+ </div>
+ <div style="overflow-y:auto;flex:1;padding:1.25rem">
+ <div style="max-width:760px;margin:0 auto">
+
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">🤖 Optimize Your CV for ATS</div>
+ <p style="color:var(--smoke);font-size:.85rem;margin-bottom:1.25rem">Upload your CV and paste the job description. AI will find missing keywords, rewrite bullets, and give you an optimized version that beats ATS filters.</p>
+
+ <form id="atsForm" onsubmit="submitATS(event)">
+ {% csrf_token %}
+ <div style="margin-bottom:1rem">
+ <div style="font-size:.7rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.375rem">Your CV (PDF or Word)</div>
+ <input type="file" name="cv_file" id="cvFile" accept=".pdf,.doc,.docx" required style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--smoke);font-size:.85rem">
+ </div>
+ <div style="margin-bottom:1rem">
+ <div style="font-size:.7rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.375rem">Job Description *</div>
+ <textarea name="job_description" id="jdInput" rows="6" required placeholder="Paste the full job description here..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--cream);font-size:.85rem;font-family:inherit;resize:vertical"></textarea>
+ </div>
+ <div style="display:flex;gap:.75rem;align-items:center">
+ <button type="submit" id="submitBtn" style="padding:12px 24px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;border-radius:12px;font-weight:700;font-size:.9rem;cursor:pointer;transition:.2s">🤖 Optimize Now</button>
+ <div class="spin" id="spinner"></div>
+ <div id="statusMsg" style="font-size:.82rem;color:var(--smoke)"></div>
+ </div>
+ </form>
+ </div>
+
+ <div id="resultsArea" style="display:none">
+ <!-- Score improvement -->
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">📊 ATS Score Impact</div>
+ <div class="score-change">
+ <div class="score-box"><div style="font-family:var(--font-d);font-size:2rem;color:#f87171" id="origScore">—</div><div style="font-size:.7rem;color:var(--smoke);margin-top:2px">Original</div></div>
+ <div class="score-arrow">→</div>
+ <div class="score-box"><div style="font-family:var(--font-d);font-size:2rem;color:#4ade80" id="optScore">—</div><div style="font-size:.7rem;color:var(--smoke);margin-top:2px">Optimized</div></div>
+ </div>
+ </div>
+
+ <!-- Keywords -->
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
+ <div class="card">
+ <div class="card-title" style="color:#4ade80">✅ Keywords Found</div>
+ <div id="kwFound"></div>
+ </div>
+ <div class="card">
+ <div class="card-title" style="color:#f87171">❌ Keywords Missing</div>
+ <div id="kwMissing"></div>
+ </div>
+ </div>
+
+ <!-- Optimized summary -->
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">📝 Optimized Professional Summary</div>
+ <div id="optSummary" style="font-size:.88rem;color:var(--cream);line-height:1.7;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:.875rem"></div>
+ </div>
+
+ <!-- Optimized skills -->
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">💼 Recommended Skills Section</div>
+ <div id="optSkills" class="tags" style="display:flex;flex-wrap:wrap;gap:.375rem"></div>
+ </div>
+
+ <!-- Bullet rewrites -->
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">✏️ Rewritten Bullet Points</div>
+ <div id="optBullets"></div>
+ </div>
+
+ <!-- Tips -->
+ <div class="card">
+ <div class="card-title">💡 Additional Tips</div>
+ <div id="optTips"></div>
+ </div>
+ </div>
+ </div>
+ </div>
+</main>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+
+<script>
+const CSRF = getCookie('csrftoken');
+
+async function submitATS(e) {
+ e.preventDefault();
+ const file = document.getElementById('cvFile').files[0];
+ const jd = document.getElementById('jdInput').value.trim();
+ if (!file || !jd) { alert('Please upload a CV and paste a job description.'); return; }
+
+ document.getElementById('submitBtn').disabled = true;
+ document.getElementById('spinner').style.display = 'block';
+ document.getElementById('statusMsg').textContent = 'Analyzing keywords and optimizing…';
+ document.getElementById('resultsArea').style.display = 'none';
+
+ const fd = new FormData();
+ fd.append('cv_file', file);
+ fd.append('job_description', jd);
+ fd.append('csrfmiddlewaretoken', CSRF);
+
+ try {
+ const res = await fetch('/api/ats-optimizer/', { method: 'POST', body: fd });
+ const data = await safeJson(res);
+ if (!data.success) { alert(data.error || 'Optimization failed.'); return; }
+ renderResult(data.result);
+ } catch(err) {
+ alert('Something went wrong. Please try again.');
+ } finally {
+ document.getElementById('submitBtn').disabled = false;
+ document.getElementById('spinner').style.display = 'none';
+ document.getElementById('statusMsg').textContent = '';
+ }
+}
+
+function tag(text, cls='') {
+ return `<span style="display:inline-block;font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--border);margin:2px;${cls}">${text}</span>`;
+}
+
+function renderResult(r) {
+ document.getElementById('origScore').textContent = (r.original_ats_score || 0) + '/100';
+ document.getElementById('optScore').textContent = (r.optimized_ats_score || 0) + '/100';
+
+ const kf = document.getElementById('kwFound');
+ kf.innerHTML = (r.keywords_found || []).map(k => `<div class="kw-found">✓ ${k}</div>`).join('') || '<div style="color:var(--smoke);font-size:.82rem">None found</div>';
+
+ const km = document.getElementById('kwMissing');
+ km.innerHTML = (r.keywords_missing || []).map(k => `<div class="kw-missing">X ${k}</div>`).join('') || '<div style="color:var(--smoke);font-size:.82rem">None missing — great match!</div>';
+
+ document.getElementById('optSummary').textContent = r.optimized_summary || '';
+
+ const skills = document.getElementById('optSkills');
+ skills.innerHTML = (r.optimized_skills || []).map(s => tag(s, 'background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:#93c5fd')).join('');
+
+ const bullets = document.getElementById('optBullets');
+ bullets.innerHTML = (r.optimized_bullets || []).map(b => `
+ <div class="bullet-pair">
+ <div class="bullet-orig">❌ ${b.original}</div>
+ <div class="bullet-new">✅ ${b.improved}</div>
+ </div>`).join('') || '<div style="color:var(--smoke);font-size:.82rem">No bullet rewrites generated</div>';
+
+ const tips = document.getElementById('optTips');
+ tips.innerHTML = (r.overall_tips || []).map((t,i) => `<div style="display:flex;gap:.625rem;margin-bottom:.5rem"><div style="color:var(--fire);font-weight:700;flex-shrink:0">${i+1}.</div><div style="font-size:.85rem;color:var(--cream)">${t}</div></div>`).join('');
+
+ document.getElementById('resultsArea').style.display = 'block';
+ document.getElementById('resultsArea').scrollIntoView({behavior:'smooth'});
+}
+</script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

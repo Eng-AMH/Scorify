@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CV Builder — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/dashboard.css' %}">
+<style>
+.step-nav{display:flex;gap:.375rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.step-btn{padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--smoke);font-size:.78rem;cursor:pointer;transition:.2s}
+.step-btn.active{background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;font-weight:700}
+.step-btn.done{border-color:rgba(74,222,128,.4);color:#4ade80}
+.step-panel{display:none}.step-panel.active{display:block}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.field-group{margin-bottom:.875rem}
+.field-label{font-size:.7rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem}
+.field-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--cream);font-size:.85rem;font-family:inherit;transition:.2s}
+.field-input:focus{outline:none;border-color:var(--fire)}
+textarea.field-input{resize:vertical;min-height:72px}
+.add-btn{padding:7px 16px;border-radius:10px;border:1px dashed var(--border);background:transparent;color:var(--smoke);font-size:.8rem;cursor:pointer;width:100%;transition:.2s;margin-top:.375rem}
+.add-btn:hover{border-color:var(--border2);color:var(--cream)}
+.entry-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:.875rem;margin-bottom:.625rem;position:relative}
+.del-btn{position:absolute;top:.625rem;right:.625rem;background:none;border:none;color:var(--dim);cursor:pointer;font-size:.85rem;padding:2px 6px;border-radius:4px;transition:.2s}
+.del-btn:hover{color:#f87171;background:rgba(239,68,68,.1)}
+.spin{display:none;width:28px;height:28px;border:3px solid rgba(255,106,61,.2);border-top-color:var(--fire);border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cv-output{background:#0a0804;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.5rem;font-size:.85rem;line-height:1.7;color:var(--cream);white-space:pre-wrap;font-family:var(--font-m)}
+.section-title{font-family:var(--font-d);font-size:1.2rem;color:var(--fire);letter-spacing:.05em;border-bottom:1px solid rgba(255,106,61,.3);padding-bottom:.25rem;margin:.875rem 0 .5rem}
+@media(max-width:600px){.field-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Open navigation menu" aria-expanded="false">⋮</button>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<aside class="sidebar">
+ <a href="/" class="sb-logo"><div class="sb-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>Scorify</a>
+ <a href="/profile/" class="sb-user">
+ <div class="sb-avatar">{% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="">{% else %}{{ request.user.username|first|upper }}{% endif %}</div>
+ <div style="flex:1;min-width:0"><div class="sb-user-name">{{ request.user.username }}</div><div class="sb-user-plan"><span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span></div></div>
+ </a>
+ <nav class="sb-nav">
+ <a href="/dashboard/" class="sb-link"><span class="sb-icon">📊</span> Dashboard</a>
+ <a href="/ats-optimizer/" class="sb-link"><span class="sb-icon">🤖</span> ATS Optimizer</a>
+ <a href="/cv-builder/" class="sb-link active"><span class="sb-icon">🏗️</span> CV Builder</a>
+ <a href="/compare/" class="sb-link"><span class="sb-icon">⚖️</span> Compare CVs</a>
+ <a href="/referral/" class="sb-link"><span class="sb-icon">🤝</span> Referrals</a>
+ </nav>
+ <a href="/logout/" class="sb-link" style="margin-top:.5rem;color:#f87171"><span class="sb-icon">🚪</span> Logout</a>
+</aside>
+
+<main class="main">
+ <div class="topbar">
+ <div class="topbar-title">🏗️ CV BUILDER</div>
+ <span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+ </div>
+ <div style="overflow-y:auto;flex:1;padding:1.25rem">
+ <div style="max-width:800px;margin:0 auto">
+
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">Build Your CV with AI</div>
+ <p style="color:var(--smoke);font-size:.85rem;margin-bottom:1.25rem">Fill in your information step by step. AI will transform it into a professional, ATS-optimized CV with strong action verbs and quantified achievements.</p>
+
+ <div class="step-nav">
+ <button class="step-btn active" data-step="1" onclick="goStep(1)">1. Personal</button>
+ <button class="step-btn" data-step="2" onclick="goStep(2)">2. Experience</button>
+ <button class="step-btn" data-step="3" onclick="goStep(3)">3. Education</button>
+ <button class="step-btn" data-step="4" onclick="goStep(4)">4. Skills</button>
+ <button class="step-btn" data-step="5" onclick="goStep(5)">5. Projects</button>
+ </div>
+
+ <!-- Step 1: Personal -->
+ <div class="step-panel active" id="step1">
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">Full name *</div><input class="field-input" id="name" placeholder="Ahmed Hassan" required></div>
+ <div class="field-group"><div class="field-label">Target job title *</div><input class="field-input" id="title" placeholder="Senior Software Engineer"></div>
+ </div>
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">Email</div><input class="field-input" id="email" type="email" placeholder="ahmed@email.com"></div>
+ <div class="field-group"><div class="field-label">Phone</div><input class="field-input" id="phone" placeholder="+20 100 000 0000"></div>
+ </div>
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">Location</div><input class="field-input" id="location" placeholder="Cairo, Egypt"></div>
+ <div class="field-group"><div class="field-label">LinkedIn / Portfolio URL</div><input class="field-input" id="linkedin" placeholder="linkedin.com/in/ahmed"></div>
+ </div>
+ <div class="field-group"><div class="field-label">Summary hint (optional — what you want to emphasize)</div><textarea class="field-input" id="summary_hint" placeholder="e.g. 5 years in backend development, led teams of 8, built payment systems serving 1M users"></textarea></div>
+ <button onclick="goStep(2)" style="padding:10px 22px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;border-radius:10px;font-weight:700;cursor:pointer;margin-top:.5rem">Next: Experience →</button>
+ </div>
+
+ <!-- Step 2: Experience -->
+ <div class="step-panel" id="step2">
+ <div id="expList"></div>
+ <button class="add-btn" onclick="addExp()">+ Add work experience</button>
+ <div style="display:flex;gap:.75rem;margin-top:1rem">
+ <button onclick="goStep(1)" style="padding:9px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--smoke);cursor:pointer">← Back</button>
+ <button onclick="goStep(3)" style="padding:9px 18px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;border-radius:10px;font-weight:700;cursor:pointer">Next: Education →</button>
+ </div>
+ </div>
+
+ <!-- Step 3: Education -->
+ <div class="step-panel" id="step3">
+ <div id="eduList"></div>
+ <button class="add-btn" onclick="addEdu()">+ Add education</button>
+ <div style="display:flex;gap:.75rem;margin-top:1rem">
+ <button onclick="goStep(2)" style="padding:9px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--smoke);cursor:pointer">← Back</button>
+ <button onclick="goStep(4)" style="padding:9px 18px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;border-radius:10px;font-weight:700;cursor:pointer">Next: Skills →</button>
+ </div>
+ </div>
+
+ <!-- Step 4: Skills -->
+ <div class="step-panel" id="step4">
+ <div class="field-group"><div class="field-label">Skills (comma-separated)</div><textarea class="field-input" id="skills" rows="3" placeholder="Python, Django, PostgreSQL, Docker, React, REST APIs, Git, AWS..."></textarea></div>
+ <div style="display:flex;gap:.75rem;margin-top:.5rem">
+ <button onclick="goStep(3)" style="padding:9px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--smoke);cursor:pointer">← Back</button>
+ <button onclick="goStep(5)" style="padding:9px 18px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;border-radius:10px;font-weight:700;cursor:pointer">Next: Projects →</button>
+ </div>
+ </div>
+
+ <!-- Step 5: Projects + Generate -->
+ <div class="step-panel" id="step5">
+ <div id="projList"></div>
+ <button class="add-btn" onclick="addProj()">+ Add project</button>
+ <div style="display:flex;gap:.75rem;align-items:center;margin-top:1.25rem;flex-wrap:wrap">
+ <button onclick="goStep(4)" style="padding:9px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--smoke);cursor:pointer">← Back</button>
+ <button id="buildBtn" onclick="buildCV()" style="padding:12px 24px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;border-radius:12px;font-weight:700;font-size:.95rem;cursor:pointer">🏗️ Build My CV</button>
+ <div class="spin" id="buildSpinner"></div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Output -->
+ <div id="cvOutput" style="display:none">
+ <div class="card">
+ <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+ <span>🎉 Your AI-Built CV</span>
+ <button onclick="copyCV()" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--smoke);font-size:.78rem;cursor:pointer" id="copyBtn">📋 Copy</button>
+ </div>
+ <div class="cv-output" id="cvText"></div>
+ </div>
+ <div style="text-align:center;margin-bottom:1.5rem">
+ <a href="/" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border-radius:12px;font-weight:700;text-decoration:none;margin-top:1rem"> Now Analyze This CV →</a>
+ </div>
+ </div>
+ </div>
+ </div>
+</main>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+
+<script>
+const CSRF = getCookie('csrftoken');
+let expCount = 0, eduCount = 0, projCount = 0;
+
+function goStep(n) {
+ document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+ document.querySelectorAll('.step-btn').forEach(b => {
+ b.classList.remove('active');
+ if (parseInt(b.dataset.step) === n) b.classList.add('active');
+ });
+ document.getElementById('step' + n).classList.add('active');
+}
+
+function addExp() {
+ const id = expCount++;
+ const div = document.createElement('div');
+ div.className = 'entry-card'; div.id = 'exp' + id;
+ div.innerHTML = `
+ <button class="del-btn" onclick="document.getElementById('exp${id}').remove()">X</button>
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">Company</div><input class="field-input exp-co" placeholder="Google"></div>
+ <div class="field-group"><div class="field-label">Role</div><input class="field-input exp-role" placeholder="Software Engineer"></div>
+ </div>
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">Dates</div><input class="field-input exp-dates" placeholder="Jan 2022 – Present"></div>
+ <div class="field-group"><div class="field-label">Location</div><input class="field-input exp-loc" placeholder="Cairo, Egypt"></div>
+ </div>
+ <div class="field-group"><div class="field-label">Key achievements / responsibilities</div><textarea class="field-input exp-desc" rows="3" placeholder="Reduced API response time by 40%, led migration of legacy system to microservices, mentored 3 junior devs..."></textarea></div>`;
+ document.getElementById('expList').appendChild(div);
+}
+
+function addEdu() {
+ const id = eduCount++;
+ const div = document.createElement('div');
+ div.className = 'entry-card'; div.id = 'edu' + id;
+ div.innerHTML = `
+ <button class="del-btn" onclick="document.getElementById('edu${id}').remove()">X</button>
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">School / University</div><input class="field-input edu-sch" placeholder="Cairo University"></div>
+ <div class="field-group"><div class="field-label">Degree</div><input class="field-input edu-deg" placeholder="B.Sc. Computer Science"></div>
+ </div>
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">Dates</div><input class="field-input edu-dates" placeholder="2018 – 2022"></div>
+ <div class="field-group"><div class="field-label">GPA / Grade (optional)</div><input class="field-input edu-gpa" placeholder="3.8 / 4.0"></div>
+ </div>`;
+ document.getElementById('eduList').appendChild(div);
+}
+
+function addProj() {
+ const id = projCount++;
+ const div = document.createElement('div');
+ div.className = 'entry-card'; div.id = 'proj' + id;
+ div.innerHTML = `
+ <button class="del-btn" onclick="document.getElementById('proj${id}').remove()">X</button>
+ <div class="field-row">
+ <div class="field-group"><div class="field-label">Project name</div><input class="field-input proj-name" placeholder="E-commerce Platform"></div>
+ <div class="field-group"><div class="field-label">Tech stack</div><input class="field-input proj-tech" placeholder="React, Node.js, PostgreSQL"></div>
+ </div>
+ <div class="field-group"><div class="field-label">Description</div><textarea class="field-input proj-desc" rows="2" placeholder="Built a full-stack e-commerce platform serving 10,000 monthly users..."></textarea></div>`;
+ document.getElementById('projList').appendChild(div);
+}
+
+// Collect all form data
+function collectData() {
+ const experience = [];
+ document.querySelectorAll('.entry-card[id^="exp"]').forEach(card => {
+ experience.push({
+ company: card.querySelector('.exp-co')?.value || '',
+ role: card.querySelector('.exp-role')?.value || '',
+ dates: card.querySelector('.exp-dates')?.value || '',
+ location: card.querySelector('.exp-loc')?.value || '',
+ description: card.querySelector('.exp-desc')?.value || '',
+ });
+ });
+ const education = [];
+ document.querySelectorAll('.entry-card[id^="edu"]').forEach(card => {
+ education.push({
+ school: card.querySelector('.edu-sch')?.value || '',
+ degree: card.querySelector('.edu-deg')?.value || '',
+ dates: card.querySelector('.edu-dates')?.value || '',
+ gpa: card.querySelector('.edu-gpa')?.value || '',
+ });
+ });
+ const projects = [];
+ document.querySelectorAll('.entry-card[id^="proj"]').forEach(card => {
+ projects.push({
+ name: card.querySelector('.proj-name')?.value || '',
+ description: card.querySelector('.proj-desc')?.value || '',
+ tech: card.querySelector('.proj-tech')?.value || '',
+ });
+ });
+ const skills = document.getElementById('skills').value.split(',').map(s=>s.trim()).filter(Boolean);
+ return {
+ name: document.getElementById('name').value.trim(),
+ title: document.getElementById('title').value.trim(),
+ email: document.getElementById('email').value.trim(),
+ phone: document.getElementById('phone').value.trim(),
+ location: document.getElementById('location').value.trim(),
+ linkedin: document.getElementById('linkedin').value.trim(),
+ summary_hint: document.getElementById('summary_hint').value.trim(),
+ experience, education, skills, projects,
+ };
+}
+
+function cvToText(cv) {
+ let out = '';
+ const c = cv.contact || {};
+ out += `${c.name || ''}\n${cv.title || ''}\n`;
+ if (c.email) out += c.email + ' ';
+ if (c.phone) out += c.phone + ' ';
+ if (c.location) out += c.location;
+ out += '\n\n';
+
+ if (cv.summary) out += `PROFESSIONAL SUMMARY\n${'─'.repeat(40)}\n${cv.summary}\n\n`;
+
+ if (cv.experience?.length) {
+ out += `EXPERIENCE\n${'─'.repeat(40)}\n`;
+ cv.experience.forEach(e => {
+ out += `${e.role} | ${e.company} | ${e.dates}\n`;
+ (e.bullets||[]).forEach(b => out += ` • ${b}\n`);
+ out += '\n';
+ });
+ }
+
+ if (cv.education?.length) {
+ out += `EDUCATION\n${'─'.repeat(40)}\n`;
+ cv.education.forEach(e => out += `${e.degree} | ${e.school} | ${e.dates}\n`);
+ out += '\n';
+ }
+
+ if (cv.skills) {
+ const sk = cv.skills;
+ if (sk.technical?.length) out += `TECHNICAL SKILLS\n${'─'.repeat(40)}\n${sk.technical.join(' • ')}\n\n`;
+ if (sk.soft?.length) out += `SOFT SKILLS\n${sk.soft.join(' • ')}\n\n`;
+ }
+
+ if (cv.projects?.length) {
+ out += `PROJECTS\n${'─'.repeat(40)}\n`;
+ cv.projects.forEach(p => {
+ out += `${p.name}`;
+ if (p.tech?.length) out += ` (${p.tech.join(', ')})`;
+ out += `\n ${p.description}\n\n`;
+ });
+ }
+ return out;
+}
+
+async function buildCV() {
+ const data = collectData();
+ if (!data.name || !data.title) { alert('Please fill in your name and target title.'); goStep(1); return; }
+
+ document.getElementById('buildBtn').disabled = true;
+ document.getElementById('buildSpinner').style.display = 'block';
+ document.getElementById('cvOutput').style.display = 'none';
+
+ try {
+ const res = await fetch('/api/cv-builder/', {
+ method: 'POST',
+ headers: {'Content-Type':'application/json','X-CSRFToken':CSRF},
+ body: JSON.stringify(data),
+ });
+ const resp = await safeJson(res);
+ if (!resp.success) { alert(resp.error || 'Build failed.'); return; }
+ document.getElementById('cvText').textContent = cvToText(resp.cv);
+ document.getElementById('cvOutput').style.display = 'block';
+ document.getElementById('cvOutput').scrollIntoView({behavior:'smooth'});
+ } catch(e) {
+ alert('Something went wrong. Please try again.');
+ } finally {
+ document.getElementById('buildBtn').disabled = false;
+ document.getElementById('buildSpinner').style.display = 'none';
+ }
+}
+
+function copyCV() {
+ const text = document.getElementById('cvText').textContent;
+ navigator.clipboard.writeText(text).then(() => {
+ const btn = document.getElementById('copyBtn');
+ btn.textContent = '✅ Copied!';
+ setTimeout(() => btn.textContent = '📋 Copy', 2000);
+ });
+}
+
+// Add one entry of each type on load
+addExp(); addEdu();
+</script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

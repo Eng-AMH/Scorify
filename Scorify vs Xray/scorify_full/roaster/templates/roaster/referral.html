@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Referral Program — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/dashboard.css' %}">
+</head>
+<body>
+<button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Open navigation menu" aria-expanded="false">⋮</button>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<aside class="sidebar">
+ <a href="/" class="sb-logo"><div class="sb-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>Scorify</a>
+ <a href="/profile/" class="sb-user">
+ <div class="sb-avatar">{% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="">{% else %}{{ request.user.username|first|upper }}{% endif %}</div>
+ <div style="flex:1;min-width:0"><div class="sb-user-name">{{ request.user.username }}</div><div class="sb-user-plan"><span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span></div></div>
+ </a>
+ <nav class="sb-nav">
+ <a href="/dashboard/" class="sb-link"><span class="sb-icon">📊</span> Dashboard</a>
+ <a href="/profile/" class="sb-link"><span class="sb-icon">👤</span> Profile</a>
+ <a href="/referral/" class="sb-link active"><span class="sb-icon">🤝</span> Referrals</a>
+ <a href="/leaderboard/" class="sb-link"><span class="sb-icon">🏆</span> Leaderboard</a>
+ <a href="/blog/" class="sb-link"><span class="sb-icon">📝</span> Blog</a>
+ </nav>
+ <a href="/logout/" class="sb-link" style="margin-top:.5rem;color:#f87171"><span class="sb-icon">🚪</span> Logout</a>
+</aside>
+
+<main class="main">
+ <div class="topbar">
+ <div class="topbar-title">🤝 REFERRAL PROGRAM</div>
+ <a href="/dashboard/" style="padding:9px 20px;border-radius:12px;font-size:.82rem;font-weight:700;color:#0a0804;background:linear-gradient(135deg,var(--fire),var(--amber));text-decoration:none">📊 Dashboard</a>
+ </div>
+
+ <div style="max-width:760px;margin:1.5rem auto;padding:0 1.25rem">
+
+ <!-- How it works -->
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">🎁 How it works</div>
+ <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center">
+ <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:1rem">
+ <div style="font-size:1.8rem;margin-bottom:.4rem">📤</div>
+ <div style="font-weight:700;font-size:.88rem;color:var(--cream);margin-bottom:.25rem">Share your link</div>
+ <div style="font-size:.78rem;color:var(--smoke)">Send your unique referral link to friends</div>
+ </div>
+ <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:1rem">
+ <div style="font-size:1.8rem;margin-bottom:.4rem">✅</div>
+ <div style="font-weight:700;font-size:.88rem;color:var(--cream);margin-bottom:.25rem">They sign up</div>
+ <div style="font-size:.78rem;color:var(--smoke)">Friend creates a free account using your link</div>
+ </div>
+ <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:1rem">
+ <div style="font-size:1.8rem;margin-bottom:.4rem"></div>
+ <div style="font-weight:700;font-size:.88rem;color:var(--cream);margin-bottom:.25rem">Both get +{{ bonus_per_ref }} uploads</div>
+ <div style="font-size:.78rem;color:var(--smoke)">You and your friend both earn bonus uploads</div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Your code -->
+ <div class="card" style="margin-bottom:1.25rem">
+ <div class="card-title">🔑 Your referral link</div>
+ <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+ <div style="flex:1;min-width:200px">
+ <div style="font-size:.7rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">Share this link</div>
+ <div id="refUrl" style="font-family:var(--font-m);font-size:.9rem;color:var(--cream);word-break:break-all">{{ site_url }}/register/?ref={{ ref_code.code }}</div>
+ </div>
+ <button onclick="copyRef()" style="padding:10px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--smoke);cursor:pointer;font-size:.82rem;transition:.2s;white-space:nowrap" id="copyBtn">📋 Copy link</button>
+ </div>
+ <div style="display:flex;gap:.75rem;margin-top:.75rem;flex-wrap:wrap">
+ <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:.75rem 1rem;text-align:center;flex:1;min-width:100px">
+ <div style="font-family:var(--font-d);font-size:1.8rem;color:var(--fire)">{{ ref_code.total_referrals }}</div>
+ <div style="font-size:.7rem;color:var(--smoke)">Total referrals</div>
+ </div>
+ <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:.75rem 1rem;text-align:center;flex:1;min-width:100px">
+ <div style="font-family:var(--font-d);font-size:1.8rem;color:var(--amber)">{{ ref_code.bonus_uploads_earned }}</div>
+ <div style="font-size:.7rem;color:var(--smoke)">Bonus uploads earned</div>
+ </div>
+ <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:.75rem 1rem;text-align:center;flex:1;min-width:100px">
+ <div style="font-family:var(--font-d);font-size:1.8rem;color:#4ade80">{{ profile.bonus_uploads }}</div>
+ <div style="font-size:.7rem;color:var(--smoke)">Unused bonus uploads</div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Referred users -->
+ {% if uses %}
+ <div class="card">
+ <div class="card-title">👥 People you referred</div>
+ <div style="display:flex;flex-direction:column;gap:.5rem">
+ {% for use in uses %}
+ <div style="display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;background:rgba(255,255,255,.03);border-radius:10px">
+ <div style="display:flex;align-items:center;gap:.625rem">
+ <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--fire),var(--amber));display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#0a0804;font-weight:700">{{ use.referred_user.username|first|upper }}</div>
+ <div style="font-size:.85rem;color:var(--cream)">{{ use.referred_user.username }}</div>
+ </div>
+ <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m)">{{ use.created_at|date:"M d, Y" }}</div>
+ </div>
+ {% endfor %}
+ </div>
+ </div>
+ {% else %}
+ <div class="card" style="text-align:center;padding:2rem">
+ <div style="font-size:2.5rem;margin-bottom:.5rem">🤝</div>
+ <div style="color:var(--cream);font-weight:600;margin-bottom:.25rem">No referrals yet</div>
+ <div style="color:var(--smoke);font-size:.85rem">Share your link above to start earning bonus uploads!</div>
+ </div>
+ {% endif %}
+ </div>
+</main>
+
+<script>
+function copyRef() {
+ const url = document.getElementById('refUrl').textContent.trim();
+ navigator.clipboard.writeText(url).then(() => {
+ const btn = document.getElementById('copyBtn');
+ btn.textContent = '✅ Copied!';
+ setTimeout(() => btn.textContent = '📋 Copy link', 2000);
+ });
+}
+</script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

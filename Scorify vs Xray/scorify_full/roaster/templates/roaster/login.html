@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign In — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+</head>
+<body class="auth-page">
+ <div class="bg-grid"></div>
+ <div class="auth-shell">
+ <section class="auth-hero">
+ <a href="/" class="auth-brand">
+ <span class="auth-brand-mark"><span>S</span></span>
+ <span class="auth-brand-name">Scorify</span>
+ </a>
+
+ <div class="auth-tag">AI CV SCORING</div>
+ <h1 class="auth-hero-title">Turn Your CV Into a Score.</h1>
+ <p class="auth-hero-copy">Get instant insights. Improve faster. Land better jobs.</p>
+
+ <div class="auth-benefits">
+ <div class="benefit-item"><span>⚡</span><span>Fast CV feedback in seconds</span></div>
+ <div class="benefit-item"><span>🎯</span><span>ATS-aware scoring and tips</span></div>
+ <div class="benefit-item"><span>🔒</span><span>Private, secure sign-in</span></div>
+ </div>
+
+ <div class="auth-sample-card">
+ <div class="sample-row">
+ <div>
+ <div class="sample-name">AHMED MAHMOUD</div>
+ <div class="sample-role">Software Engineer</div>
+ </div>
+ <div class="sample-score">84</div>
+ </div>
+ <div class="sample-bars">
+ <div><span>Skills & Keywords</span><b>92%</b></div>
+ <div><span>Clarity & Structure</span><b>81%</b></div>
+ <div><span>ATS Optimization</span><b>76%</b></div>
+ </div>
+ </div>
+ </section>
+
+ <section class="auth-panel">
+ <div class="page-utility-bar auth-utility">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+ </div>
+
+ <div class="auth-card auth-card-wide">
+ <h2 class="auth-title">WELCOME BACK</h2>
+ <p class="auth-sub">Sign in with your email and password.</p>
+
+ <div id="errBox" class="err" role="alert" aria-live="polite"></div>
+
+ <form id="loginForm" class="auth-form" novalidate>
+ {% csrf_token %}
+ <label class="form-label" for="identityInput">Email or Username</label>
+ <input type="text" id="identityInput" class="form-input" placeholder="your@email.com" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+
+ <label class="form-label" for="passwordInput">Password</label>
+ <input type="password" id="passwordInput" class="form-input" placeholder="••••••••" autocomplete="current-password" required>
+
+ <button class="form-btn" id="loginBtn" type="submit"> Sign In</button>
+ </form>
+
+ <div class="auth-links">
+ <a href="/forgot-password/">Forgot password?</a>
+ <a href="/register/">Don't have an account? Sign up free</a>
+ </div>
+ </div>
+ </section>
+ </div>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script>
+const loginForm = document.getElementById('loginForm');
+const errBox = document.getElementById('errBox');
+const loginBtn = document.getElementById('loginBtn');
+const identityInput = document.getElementById('identityInput');
+const passwordInput = document.getElementById('passwordInput');
+
+function showErr(message) {
+ errBox.textContent = message;
+ errBox.style.display = 'block';
+}
+
+function clearErr() {
+ errBox.textContent = '';
+ errBox.style.display = 'none';
+}
+
+async function doLogin() {
+ const identity = identityInput.value.trim();
+ const password = passwordInput.value.trim();
+
+ clearErr();
+ if (!identity || !password) {
+ showErr('Please enter your email/username and password.');
+ return;
+ }
+
+ loginBtn.disabled = true;
+ loginBtn.textContent = 'Signing in...';
+
+ try {
+ const response = await fetch('/api/login/', {
+ method: 'POST',
+ credentials: 'same-origin',
+ headers: {
+ 'Content-Type': 'application/json',
+ 'X-CSRFToken': getCookie('csrftoken')
+ },
+ body: JSON.stringify({ identity, password })
+ });
+
+ const data = await safeJson(response);
+ if (!response.ok) {
+ showErr(data.error || data.message || data.detail || 'Please try again.');
+ return;
+ }
+
+ window.location.href = data.redirect || '/dashboard/';
+ } catch (error) {
+ showErr('Network error. Please try again.');
+ } finally {
+ loginBtn.disabled = false;
+ loginBtn.textContent = ' Sign In';
+ }
+}
+
+loginForm.addEventListener('submit', (e) => {
+ e.preventDefault();
+ doLogin();
+});
+
+identityInput.addEventListener('input', clearErr);
+passwordInput.addEventListener('input', clearErr);
+</script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

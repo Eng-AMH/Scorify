@@ -1,0 +1,213 @@
+/* ============================================================
+   compare.css — Scorify
+   Used by: compare.html only
+   Depends on: shared.css (loaded first via base.html)
+   NOTE: compare.html used to load dashboard.css — now it loads
+         this dedicated file instead. Sidebar styles are duplicated
+         here intentionally to keep each page self-contained.
+   ============================================================ */
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SIDEBAR  (same structure as dashboard)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh;
+  z-index: 100; padding: 1.5rem; overflow-y: auto;
+}
+.sb-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-d); font-size: 1.2rem; letter-spacing: .05em;
+  margin-bottom: 2rem; padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none; color: var(--cream);
+}
+.sb-logo-icon { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; animation: iconPulse 3s ease-in-out infinite; }
+.sb-user {
+  display: flex; align-items: center; gap: 10px; padding: 12px;
+  border-radius: 14px; background: var(--surface); border: 1px solid var(--border);
+  margin-bottom: 1.5rem; cursor: pointer; transition: .3s;
+  text-decoration: none; color: var(--cream);
+}
+.sb-user:hover { border-color: var(--border2); }
+.sb-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--fire), var(--amber));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-d); font-size: 1.1rem;
+  flex-shrink: 0; overflow: hidden; color: #0a0804; font-weight: 800;
+}
+.sb-avatar img    { width: 100%; height: 100%; object-fit: cover; }
+.sb-user-name     { font-weight: 700; font-size: .875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-plan     { margin-top: 2px; }
+.sb-link {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  border-radius: 12px; font-size: .9rem; font-weight: 500;
+  color: var(--smoke); transition: .25s; cursor: pointer;
+  border: 1px solid transparent; text-decoration: none; margin-bottom: 4px;
+}
+.sb-link:hover,
+.sb-link.active { background: rgba(255,106,61,.07); color: var(--cream); border-color: rgba(255,106,61,.14); }
+.sb-link.active { color: var(--fire); }
+.sb-icon { font-size: 1.1rem; width: 22px; text-align: center; flex-shrink: 0; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MAIN CONTENT AREA
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.main {
+  flex: 1; min-width: 0;
+  height: 100vh; overflow-y: auto; overflow-x: hidden;
+  padding: 1.9rem clamp(1.1rem,2vw,2rem) 2rem;
+}
+.topbar       { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.topbar-title { font-family: var(--font-d); font-size: 2rem; letter-spacing: .05em; line-height: .95; }
+
+/* ── Base card ── */
+.card        { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.75rem; margin-bottom: 1rem; transition: .3s; backdrop-filter: blur(14px); }
+.card-title  { font-family: var(--font-d); font-size: 1.2rem; letter-spacing: .05em; margin-bottom: 1.25rem; display: flex; align-items: center; gap: .5rem; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   COMPARE FORM
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.compare-grid {
+  display: grid; grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 1rem; margin-bottom: 1.1rem;
+}
+.compare-label {
+  font-family: var(--font-m); font-size: .65rem; color: var(--smoke);
+  letter-spacing: .12em; text-transform: uppercase; margin-bottom: .4rem;
+}
+.compare-select {
+  width: 100%; padding: 11px 14px; border-radius: 12px;
+  background: rgba(255,255,255,.05); border: 1px solid var(--border);
+  color: var(--cream); font-family: var(--font-b); font-size: .9rem;
+  outline: none; transition: border-color .2s; cursor: pointer;
+}
+.compare-select:focus { border-color: rgba(255,106,61,.5); }
+.compare-select option { background: var(--bg2); color: var(--cream); }
+
+.compare-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+  margin: 1rem auto 0; padding: 14px 20px; border-radius: 16px;
+  min-width: min(420px,100%);
+  background: linear-gradient(135deg, var(--a1), var(--a2));
+  color: #060402; font-weight: 800; font-size: 1rem;
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 20px var(--glow1); transition: .3s;
+}
+.compare-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--glow1); }
+.compare-btn:disabled { opacity: .5; pointer-events: none; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   COMPARE RESULTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.compare-results { display: grid; gap: 1rem; }
+
+/* Score banner */
+.compare-score-banner { background: rgba(255,255,255,.03); }
+.compare-banner-grid  {
+  display: grid; grid-template-columns: minmax(0,1fr) 120px minmax(0,1fr);
+  gap: 1.25rem; align-items: center;
+}
+.score-big {
+  font-family: var(--font-d); font-size: clamp(2.6rem,5vw,4rem);
+  line-height: .95;
+}
+
+/* Section breakdown bar */
+.section-row {
+  display: grid; grid-template-columns: 1fr 40px 1fr; gap: .75rem; align-items: center;
+  margin-top: .5rem;
+}
+.bar-wrap { height: 6px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; margin-top: .25rem; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+
+/* Two-col improvements / regressions */
+.compare-two-col { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+
+/* Next steps */
+.next-step {
+  padding: .6rem .75rem; font-size: .875rem; color: var(--cream);
+  border-bottom: 1px solid var(--border); line-height: 1.6;
+}
+.next-step:last-child { border-bottom: none; }
+.compare-card { background: rgba(255,255,255,.03); }
+.compare-next { background: rgba(255,255,255,.03); }
+
+/* Actions row */
+.compare-actions {
+  display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; margin-top: .5rem;
+}
+.compare-actions a {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 46px; padding: 12px 26px; border-radius: 14px;
+  border: 1px solid var(--border); font-size: .9rem; font-weight: 700; transition: .2s;
+}
+.compare-actions a.primary  { background: linear-gradient(135deg, var(--fire), var(--amber)); color: #0a0804; border-color: transparent; }
+.compare-actions a.secondary{ color: var(--smoke); }
+.compare-actions a:hover    { transform: translateY(-1px); }
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(10,8,4,.9); backdrop-filter: blur(12px);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1rem;
+}
+.loading-overlay.active { display: flex; }
+.spinner {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 3px solid rgba(255,106,61,.2);
+  border-top-color: var(--fire);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 1100px) {
+  .compare-grid,
+  .compare-banner-grid,
+  .compare-two-col { grid-template-columns: 1fr; }
+  .compare-banner-grid { justify-items: center; text-align: center; }
+  .compare-btn { width: 100%; min-width: 0; }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; height: 100vh;
+    transform: translateX(-105%); transition: transform .26s ease;
+    width: 280px; max-width: 84vw;
+    box-shadow: 8px 0 30px rgba(0,0,0,.28); z-index: 250;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main { height: auto; overflow-y: visible; padding: 4.75rem 1rem 1rem; }
+  .compare-actions { flex-direction: column; }
+  .compare-actions a { width: 100%; }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LIGHT MODE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.light-mode .sidebar { background: #f0eae3; }
+body.light-mode .main    { background: linear-gradient(180deg,#f5f0eb 0%,#efe7de 100%); }
+body.light-mode .card    { background: rgba(255,255,255,.55); border-color: rgba(0,0,0,.08); }
+body.light-mode .sb-link, body.light-mode .sb-user { background: rgba(255,255,255,.3); border-color: rgba(0,0,0,.08); }
+body.light-mode .sb-link:hover,
+body.light-mode .sb-link.active { background: rgba(255,106,61,.08); }
+body.light-mode .compare-select { background: rgba(255,255,255,.8); color: #1a1208; }

@@ -1,0 +1,299 @@
+{% extends 'roaster/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — Scorify{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="{% static 'roaster/css/dashboard.css' %}">
+{% endblock %}
+
+{% block body_attrs %} class="dashboard-page"{% endblock %}
+
+{% block content %}
+
+<button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Open navigation" aria-expanded="false">⋮</button>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
+
+<div class="page-utility-bar">
+  <div id="globeWrap"></div>
+  <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="/" class="sb-logo">
+    <div class="sb-logo-icon brand-emblem" aria-hidden="true"><span>S</span></div>
+    Scorify
+  </a>
+
+  <a href="/profile/" class="sb-user">
+    <div class="sb-avatar">
+      {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="">
+      {% else %}{{ request.user.username|first|upper }}{% endif %}
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="sb-user-name">{{ request.user.username }}</div>
+      <div class="sb-user-plan">
+        <span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+      </div>
+    </div>
+  </a>
+
+  {% if profile.plan == 'free' %}
+  <div class="upgrade-card" style="margin-top:1rem">
+    <div class="upgrade-name" data-i18n="free-plan">FREE PLAN</div>
+    <div class="upgrade-desc">{{ uploads_remaining }} left today</div>
+    <a href="/upgrade/?plan=pro" class="upgrade-btn ub-pro" style="margin-bottom:8px" data-i18n="upgrade-pro">🔵 Upgrade to Pro — $5/mo</a>
+    <a href="/upgrade/?plan=vip" class="upgrade-btn ub-vip" style="margin-top:8px" data-i18n="upgrade-vip">⚡ Go VIP — $15/mo</a>
+  </div>
+  {% elif profile.plan == 'pro' %}
+  <div class="upgrade-card pro" style="margin-top:1rem">
+    <div class="upgrade-name" style="color:var(--pro)">PRO 🔵</div>
+    <div class="upgrade-desc">Unlimited · Full analysis</div>
+    <a href="/upgrade/?plan=vip" class="upgrade-btn ub-vip">⚡ Upgrade to VIP</a>
+  </div>
+  {% else %}
+  <div class="upgrade-card vip" style="margin-top:1rem">
+    <div class="upgrade-name" style="color:var(--fire)">VIP ⚡</div>
+    <div class="upgrade-desc">All features unlocked</div>
+  </div>
+  {% endif %}
+
+  <br>
+  <nav class="sb-nav">
+    <a href="/dashboard/" class="sb-link active"><span class="sb-icon">📊</span> <span data-i18n="sb-dashboard">Dashboard</span></a>
+    <a href="/profile/"   class="sb-link"><span class="sb-icon">👤</span> <span data-i18n="sb-profile">My Profile</span></a>
+    <a href="/compare/"   class="sb-link {% if not profile.is_pro %}disabled{% endif %}">
+      <span class="sb-icon">⚖️</span> <span data-i18n="sb-compare">Compare CVs</span>
+      {% if not profile.is_pro %}<span style="font-size:.7rem">🔒</span>{% endif %}
+    </a>
+    <a href="#uploadZone" class="sb-link"><span class="sb-icon">⚡</span> <span data-i18n="sb-newroast">New Roast</span></a>
+    <a href="/logout/" class="sb-link" style="margin-top:auto;color:#f87171"><span class="sb-icon">🚪</span> <span data-i18n="sb-logout">Logout</span></a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" data-i18n="dash-title">DASHBOARD</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card"><div class="stat-icon">📄</div><div class="stat-val">{{ profile.total_uploads }}</div><div class="stat-lbl" data-i18n="stat-cvs">Docs Analyzed</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">{{ profile.best_score }}</div><div class="stat-lbl" data-i18n="stat-best">Best Score</div></div>
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val">{{ uploads_today }}</div><div class="stat-lbl" data-i18n="stat-today">Uploaded Today</div></div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-val">{% if profile.plan != 'free' %}∞{% else %}{{ uploads_remaining }}{% endif %}</div>
+      <div class="stat-lbl" data-i18n="stat-remaining">Remaining Today</div>
+    </div>
+  </div>
+
+  <!-- TWO COL -->
+  <div class="two-col">
+    <!-- UPLOAD -->
+    <div class="card">
+      <div class="card-title">
+        <span data-i18n="card-new-title">⚡ New Analysis</span>
+        <span class="badge badge-{{ profile.plan }}" style="margin-left:auto">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+      </div>
+      <div class="upload-zone" id="uploadZone">
+        <div class="uico">📄</div>
+        <div style="font-size:.9rem;color:var(--smoke)">
+          <strong style="color:var(--cream)" data-i18n="upload-drop">Drop your CV here</strong>
+          <span data-i18n="upload-or"> or click to browse</span>
+        </div>
+        <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m);margin-top:.25rem" data-i18n="upload-hint">PDF or Word · Max 5MB · Free scoring</div>
+      </div>
+      {% if profile.plan == 'free' %}
+      <div class="limit-bar">
+        <div class="limit-track"><div class="limit-fill" id="limitFill"></div></div>
+        <div class="limit-txt"><strong>{{ uploads_today }}/3</strong> today</div>
+      </div>
+      {% endif %}
+      <div id="resultArea" style="margin-top:1rem"></div>
+    </div>
+
+    <!-- CHART + BADGES -->
+    <div class="card">
+      <div class="card-title" data-i18n="card-score-title">📈 Score History</div>
+      {% if score_history != '[]' %}
+      <div class="chart-wrap"><canvas id="scoreChart"></canvas></div>
+      {% else %}
+      <div class="empty-chart"><span class="empty-icon">📊</span>Upload your first CV to see progress</div>
+      {% endif %}
+      <div style="margin-top:1.25rem">
+        <div style="font-family:var(--font-m);font-size:.62rem;color:var(--smoke);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.75rem">ACHIEVEMENTS</div>
+        <div class="badges">
+          {% for badge in profile.achievements %}
+          <div class="badge-item" title="{{ badge.desc }}">{{ badge.icon }} {{ badge.name }}</div>
+          {% empty %}
+          <div style="font-size:.82rem;color:var(--smoke)">Upload CVs to earn badges!</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div style="margin-top:1.25rem;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <div style="font-family:var(--font-m);font-size:.62rem;color:var(--smoke);letter-spacing:.15em;text-transform:uppercase">Profile Completion</div>
+          <div style="font-family:var(--font-d);font-size:1.1rem;color:var(--fire)">{{ profile.profile_completion }}%</div>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:{{ profile.profile_completion }}%;background:linear-gradient(90deg,var(--fire),var(--amber));border-radius:3px;transition:width 1s"></div>
+        </div>
+        {% if profile.profile_completion < 80 %}
+        <a href="/profile/" style="font-size:.78rem;color:var(--fire);display:block;margin-top:.6rem">Complete your profile →</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card" style="margin-bottom:2rem">
+    <div class="card-title" data-i18n="card-history">📁 History</div>
+    {% if analyses %}
+    <div style="overflow-x:auto">
+      <table class="history-table">
+        <thead><tr>
+          <th>Score</th><th>File</th><th>Type</th><th>Verdict</th><th>Plan</th><th>Date</th><th></th>
+        </tr></thead>
+        <tbody>
+          {% for a in analyses %}
+          <tr>
+            <td>
+              <div class="sc-pill {% if a.overall_score < 40 %}sc-f{% elif a.overall_score < 65 %}sc-a{% else %}sc-g{% endif %}">
+                {{ a.overall_score|default:"—" }}
+              </div>
+            </td>
+            <td class="fn-cell" title="{{ a.original_filename }}">{{ a.original_filename }}</td>
+            <td style="font-size:.72rem;color:var(--smoke);font-family:var(--font-m)">
+              {% if a.analysis_data.document_type %}{{ a.analysis_data.document_type }}{% else %}Document{% endif %}
+            </td>
+            <td><span class="verdict-pill {% if a.overall_score < 40 %}vp-f{% elif a.overall_score < 65 %}vp-a{% else %}vp-g{% endif %}">{{ a.verdict }}</span></td>
+            <td><span class="plan-pill pp-{{ a.plan_used }}">{{ a.plan_used|upper }}</span></td>
+            <td style="color:var(--smoke);font-family:var(--font-m);font-size:.72rem">{{ a.created_at|date:"M d, Y" }}</td>
+            <td style="display:flex;gap:.4rem;align-items:center">
+              <button class="view-btn" onclick="viewAnalysis('{{ a.id }}')">View →</button>
+              {% if profile.is_pro %}
+              <button class="export-pdf-btn" data-pdf="{{ a.id }}" onclick="exportPDF('{{ a.id }}')">📄 PDF</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <span class="empty-icon">📭</span>
+      <div>No documents analyzed yet — upload your first one above!</div>
+    </div>
+    {% endif %}
+  </div>
+</main>
+
+<!-- ANALYSIS MODAL -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div style="font-family:var(--font-d);font-size:1.4rem;letter-spacing:.05em" id="modalTitle">ANALYSIS</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loadingEl">
+  <div class="loading-fire brand-emblem"><span>S</span></div>
+  <div class="loading-title" id="loadingTitle" data-i18n="loading-title">ANALYZING YOUR DOCUMENT...</div>
+  <div class="loading-sub">{% if profile.plan == 'vip' %}VIP ULTRA MODE{% elif profile.plan == 'pro' %}PRO ANALYSIS{% else %}FREE ANALYSIS{% endif %}</div>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+</div>
+
+<!-- ONBOARDING MODAL -->
+{% if show_onboarding %}
+<div class="ob-overlay" id="obOverlay">
+  <div class="ob-modal">
+    <div style="font-size:2.5rem;margin-bottom:.5rem">⚡</div>
+    <div style="font-family:var(--font-d);font-size:1.6rem;color:var(--cream);letter-spacing:.05em">WELCOME TO YOUR DASHBOARD</div>
+    <p style="color:var(--smoke);font-size:.88rem;margin:.75rem 0 0">Here's everything you can do with your free account:</p>
+    <div class="ob-steps">
+      <div class="ob-step"><div class="ob-step-icon">📄</div><div class="ob-step-title">Upload CVs</div><div class="ob-step-desc">3 per day free · Instant AI analysis</div></div>
+      <div class="ob-step"><div class="ob-step-icon">📊</div><div class="ob-step-title">Track Progress</div><div class="ob-step-desc">Score history · Achievements</div></div>
+      <div class="ob-step"><div class="ob-step-icon">⚡</div><div class="ob-step-title">Get Scored</div><div class="ob-step-desc">Honest feedback with real fixes</div></div>
+    </div>
+    <div style="background:rgba(255,106,61,.06);border:1px solid rgba(255,106,61,.2);border-radius:12px;padding:.875rem;margin-bottom:1.25rem;text-align:left">
+      <div style="font-size:.75rem;color:var(--fire);font-weight:700;margin-bottom:.4rem">🔵 Unlock with Pro ($5/mo)</div>
+      <div style="font-size:.78rem;color:var(--smoke)">Unlimited uploads · PDF export · CV comparison · Section-by-section analysis</div>
+    </div>
+    <button class="ob-close-btn" onclick="closeOnboarding()">⚡ Let's Go — Start Uploading</button>
+    <div style="margin-top:.75rem">
+      <a href="/upgrade/?plan=pro" style="font-size:.78rem;color:var(--fire);text-decoration:none">Or upgrade to Pro →</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  window.SCORE_HISTORY = {{ score_history|safe }};
+  window.UPLOADS_TODAY = {{ uploads_today|default:0 }};
+  window.USER_PLAN     = '{{ profile.plan }}';
+</script>
+
+{% if show_onboarding %}
+<script>
+async function closeOnboarding() {
+  document.getElementById('obOverlay').style.display = 'none';
+  try {
+    await fetch('/api/onboarding-done/', {
+      method: 'POST',
+      headers: {'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || ''},
+    });
+  } catch(e) {}
+}
+</script>
+{% endif %}
+
+<script>
+window.exportPDF = function(analysisId) {
+  const btn = document.querySelector(`[data-pdf="${analysisId}"]`);
+  if (btn) { btn.textContent = '⏳ Generating...'; btn.style.pointerEvents = 'none'; }
+  window.location.href = `/api/export/${analysisId}/`;
+  setTimeout(() => {
+    if (btn) { btn.textContent = '📄 PDF'; btn.style.pointerEvents = ''; }
+  }, 3000);
+};
+
+document.getElementById('newAnalysisBtn')?.addEventListener('click', e => {
+  e.preventDefault();
+  document.getElementById('uploadZone')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+</script>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/dashboard.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+
+<style>
+/* ── Inline page-only styles ─────────────────────────── */
+.ob-overlay { position:fixed;inset:0;background:rgba(10,8,4,.92);z-index:300;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease; }
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.ob-modal { max-width:520px;width:90%;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;text-align:center; }
+.ob-steps { display:flex;gap:1rem;margin:1.5rem 0;flex-wrap:wrap; }
+.ob-step  { flex:1;min-width:120px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:1rem .75rem; }
+.ob-step-icon  { font-size:1.6rem;margin-bottom:.4rem; }
+.ob-step-title { font-weight:700;font-size:.85rem;color:var(--cream); }
+.ob-step-desc  { font-size:.75rem;color:var(--smoke);margin-top:.2rem; }
+.ob-close-btn  { width:100%;padding:13px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border:none;border-radius:12px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.2s;font-family:var(--font-b); }
+.ob-close-btn:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,106,61,.4); }
+</style>
+{% endblock %}

@@ -1,0 +1,271 @@
+{% extends 'roaster/base.html' %}
+{% load static %}
+
+{% block title %}CV Comparison — Scorify{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'roaster/css/compare.css' %}">
+{% endblock %}
+
+{% block body_attrs %} class="compare-page"{% endblock %}
+
+{% block content %}
+
+<button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Open navigation" aria-expanded="false">⋮</button>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
+
+<div class="page-utility-bar">
+  <div id="globeWrap"></div>
+  <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div style="font-family:var(--font-d);font-size:1.2rem;color:var(--cream)">⚖️ Comparing CVs...</div>
+  <div style="font-size:.8rem;color:var(--smoke)">AI is analysing both documents</div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="/" class="sb-logo">
+    <div class="sb-logo-icon brand-emblem" aria-hidden="true"><span>S</span></div>
+    Scorify
+  </a>
+  <a href="/profile/" class="sb-user">
+    <div class="sb-avatar">
+      {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="">
+      {% else %}{{ request.user.username|first|upper }}{% endif %}
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="sb-user-name">{{ request.user.username }}</div>
+      <div class="sb-user-plan">
+        <span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+      </div>
+    </div>
+  </a>
+  <nav class="sb-nav">
+    <a href="/dashboard/" class="sb-link"><span class="sb-icon">📊</span> <span data-i18n="sb-dashboard">Dashboard</span></a>
+    <a href="/profile/"   class="sb-link"><span class="sb-icon">👤</span> <span data-i18n="sb-profile">My Profile</span></a>
+    <a href="/compare/"   class="sb-link active"><span class="sb-icon">⚖️</span> <span data-i18n="sb-compare">Compare CVs</span></a>
+    <a href="/dashboard/#uploadZone" class="sb-link"><span class="sb-icon">⚡</span> <span data-i18n="sb-newroast">New Roast</span></a>
+    <a href="/logout/" class="sb-link" style="margin-top:auto;color:#f87171"><span class="sb-icon">🚪</span> <span data-i18n="sb-logout">Logout</span></a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">⚖️ CV COMPARISON</div>
+  </div>
+
+  <!-- Compare form -->
+  <div class="card compare-card">
+    <div class="card-title">⚖️ Compare Two CV Versions</div>
+    <p style="color:var(--smoke);font-size:.85rem;margin:0 0 1.25rem">
+      Select two of your analysed CVs to get a detailed AI comparison — what improved, what regressed, and what to do next.
+    </p>
+
+    {% if analyses %}
+    <div class="compare-grid">
+      <div>
+        <div class="compare-label">Version A (Older)</div>
+        <select class="compare-select" id="selA">
+          <option value="">— Select a CV —</option>
+          {% for a in analyses %}
+          <option value="{{ a.id }}">{{ a.original_filename }} · {{ a.overall_score }}/100 · {{ a.created_at|date:"M d, Y" }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <div class="compare-label">Version B (Newer)</div>
+        <select class="compare-select" id="selB">
+          <option value="">— Select a CV —</option>
+          {% for a in analyses %}
+          <option value="{{ a.id }}">{{ a.original_filename }} · {{ a.overall_score }}/100 · {{ a.created_at|date:"M d, Y" }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center">
+      <button class="compare-btn" id="compareBtn" onclick="runComparison()">⚖️ Compare Now</button>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:2rem;color:var(--smoke)">
+      <div style="font-size:2.5rem;margin-bottom:.5rem">📄</div>
+      <div>You need at least 2 CV analyses to compare. <a href="/" style="color:var(--fire)">Upload your first CV</a></div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsArea" class="compare-results" style="display:none">
+
+    <!-- Score banner -->
+    <div class="card compare-score-banner" id="scoreBanner">
+      <div class="compare-banner-grid">
+        <div style="text-align:center">
+          <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m);text-transform:uppercase;letter-spacing:.1em" id="nameA">Version A</div>
+          <div class="score-big" id="scoreA">—</div>
+          <div style="font-size:.8rem;color:var(--smoke)" id="verdictA"></div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:var(--font-d);font-size:1.2rem;color:var(--smoke)">VS</div>
+          <div id="winnerBadge" style="margin-top:.5rem"></div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m);text-transform:uppercase;letter-spacing:.1em" id="nameB">Version B</div>
+          <div class="score-big" id="scoreB">—</div>
+          <div style="font-size:.8rem;color:var(--smoke)" id="verdictB"></div>
+        </div>
+      </div>
+      <div id="summaryText" style="text-align:center;color:var(--cream);font-size:.9rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)"></div>
+    </div>
+
+    <!-- Section breakdown -->
+    <div class="card compare-card">
+      <div class="card-title">📊 Section Breakdown</div>
+      <div id="sectionsArea"></div>
+    </div>
+
+    <!-- Two-col: improvements + regressions -->
+    <div class="compare-two-col">
+      <div class="card compare-card">
+        <div class="card-title" style="color:#4ade80">✅ Improvements in B</div>
+        <div id="improvementsArea"></div>
+      </div>
+      <div class="card compare-card">
+        <div class="card-title" style="color:#f87171">⚠️ Regressions in B</div>
+        <div id="regressionsArea"></div>
+      </div>
+    </div>
+
+    <!-- Next steps -->
+    <div class="card compare-next">
+      <div class="card-title">🎯 Next Steps</div>
+      <div id="nextStepsArea"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="compare-actions">
+      <a href="/dashboard/" class="secondary">← Back to Dashboard</a>
+      <a href="/" class="primary">Upload New Version</a>
+    </div>
+
+  </div>
+</main>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script>
+const CSRF = getCookie('csrftoken');
+
+function scoreColor(s) {
+  if (s < 40) return '#f87171';
+  if (s < 65) return '#8b5cf6';
+  return '#4ade80';
+}
+
+async function runComparison() {
+  const idA = document.getElementById('selA').value;
+  const idB = document.getElementById('selB').value;
+  if (!idA || !idB) { alert('Please select two CVs to compare.'); return; }
+  if (idA === idB)  { alert('Please select two different CVs.'); return; }
+
+  document.getElementById('loadingOverlay').classList.add('active');
+  document.getElementById('compareBtn').disabled = true;
+  document.getElementById('resultsArea').style.display = 'none';
+
+  try {
+    const res  = await fetch('/api/compare/', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-CSRFToken': CSRF},
+      body: JSON.stringify({analysis_id_a: idA, analysis_id_b: idB}),
+    });
+    const data = await safeJson(res);
+    if (!data.success) { alert(data.error || 'Comparison failed.'); return; }
+    renderResults(data.comparison);
+  } catch(e) {
+    alert('Something went wrong. Please try again.');
+  } finally {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    document.getElementById('compareBtn').disabled = false;
+  }
+}
+
+function renderResults(c) {
+  const sA     = c.stored_score_a || c.score_a;
+  const sB     = c.stored_score_b || c.score_b;
+  const winner = c.winner || 'Tie';
+
+  document.getElementById('nameA').textContent   = c.name_a || 'Version A';
+  document.getElementById('nameB').textContent   = c.name_b || 'Version B';
+  document.getElementById('scoreA').textContent  = sA;
+  document.getElementById('scoreA').style.color  = scoreColor(sA);
+  document.getElementById('scoreB').textContent  = sB;
+  document.getElementById('scoreB').style.color  = scoreColor(sB);
+  document.getElementById('verdictA').textContent = c.verdict_a || '';
+  document.getElementById('verdictB').textContent = c.verdict_b || '';
+  document.getElementById('summaryText').textContent = c.summary || '';
+
+  document.getElementById('winnerBadge').innerHTML =
+    `<div style="padding:8px 20px;background:rgba(255,106,61,.12);border:1px solid rgba(255,106,61,.3);border-radius:20px;color:var(--fire);font-weight:700;font-size:.9rem">🏆 ${winner} Wins</div>`;
+
+  // Sections
+  const sec = document.getElementById('sectionsArea');
+  sec.innerHTML = '';
+  (c.sections || []).forEach(s => {
+    const winA = s.winner === c.name_a;
+    const winB = s.winner === c.name_b;
+    sec.innerHTML += `
+      <div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <div style="font-weight:600;color:var(--cream)">${s.name}</div>
+          <div style="font-size:.75rem;color:var(--smoke)">${s.winner === 'Tie' ? '🤝 Tie' : `🏆 ${s.winner}`}</div>
+        </div>
+        <div class="section-row">
+          <div>
+            <div style="font-family:var(--font-d);font-size:1.6rem;color:${scoreColor(s.score_a)}">${s.score_a}<span style="font-size:.9rem;color:var(--smoke)">/100</span></div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${s.score_a}%;background:${scoreColor(s.score_a)}"></div></div>
+            ${winA ? '<div style="font-size:.68rem;color:var(--fire);margin-top:2px">▲ WINS</div>' : ''}
+          </div>
+          <div style="text-align:center;font-size:.7rem;color:var(--smoke);font-family:var(--font-m)">VS</div>
+          <div>
+            <div style="font-family:var(--font-d);font-size:1.6rem;color:${scoreColor(s.score_b)};text-align:right">${s.score_b}<span style="font-size:.9rem;color:var(--smoke)">/100</span></div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${s.score_b}%;background:${scoreColor(s.score_b)}"></div></div>
+            ${winB ? '<div style="font-size:.68rem;color:var(--fire);margin-top:2px;text-align:right">▲ WINS</div>' : ''}
+          </div>
+        </div>
+        <div style="font-size:.8rem;color:var(--smoke);margin-top:.4rem">${s.feedback || ''}</div>
+      </div>`;
+  });
+
+  // Improvements
+  document.getElementById('improvementsArea').innerHTML =
+    (c.improvements_in_b || ['No specific improvements noted.']).map(i =>
+      `<div style="padding:.6rem .75rem;background:rgba(74,222,128,.05);border-left:3px solid #4ade80;border-radius:0 8px 8px 0;margin-bottom:.5rem;font-size:.85rem;color:var(--cream)">${i}</div>`
+    ).join('');
+
+  // Regressions
+  const rList = c.regressions_in_b;
+  document.getElementById('regressionsArea').innerHTML =
+    (rList && rList.length ? rList : ['No regressions detected — great improvement!']).map(r =>
+      `<div style="padding:.6rem .75rem;background:rgba(248,113,113,.05);border-left:3px solid #f87171;border-radius:0 8px 8px 0;margin-bottom:.5rem;font-size:.85rem;color:var(--cream)">${r}</div>`
+    ).join('');
+
+  // Next steps
+  document.getElementById('nextStepsArea').innerHTML =
+    (c.next_steps || []).map((s, i) =>
+      `<div class="next-step"><span style="color:var(--amber);font-weight:700">${i+1}.</span> ${s}</div>`
+    ).join('');
+
+  document.getElementById('resultsArea').style.display = 'block';
+  document.getElementById('resultsArea').scrollIntoView({behavior:'smooth'});
+}
+</script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+{% endblock %}

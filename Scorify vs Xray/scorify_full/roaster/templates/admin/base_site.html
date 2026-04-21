@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% block branding %}
+<h1 id="site-name">
+ <a href="{% url 'admin:index' %}">Scorify</a>
+</h1>
+{% endblock %}
+{% block nav-global %}
+<div style="background:rgba(255,106,61,.06);border-bottom:1px solid rgba(255,106,61,.12);padding:8px 24px;display:flex;gap:16px;align-items:center">
+ <a href="/admin/dashboard/" style="color:#ff6a3d;font-size:.8rem;font-weight:700;text-decoration:none;font-family:monospace;letter-spacing:.05em">📊 DASHBOARD</a>
+ <a href="/admin/roaster/userprofile/" style="color:#8a7a6a;font-size:.8rem;text-decoration:none;font-family:monospace">👥 USERS</a>
+ <a href="/admin/roaster/cvanalysis/" style="color:#8a7a6a;font-size:.8rem;text-decoration:none;font-family:monospace">📄 ANALYSES</a>
+ <a href="/admin/roaster/otpcode/" style="color:#8a7a6a;font-size:.8rem;text-decoration:none;font-family:monospace">🔑 OTPS</a>
+ <a href="/" target="_blank" style="color:#8a7a6a;font-size:.8rem;text-decoration:none;font-family:monospace;margin-left:auto">🌐 SITE ↗</a>
+</div>
+{% endblock %}

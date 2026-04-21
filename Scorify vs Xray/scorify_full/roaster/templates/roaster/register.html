@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create Account — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="auth-wrap">
+ <a href="/" class="auth-logo">
+ <div class="auth-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>
+ Scorify
+ </a>
+ <div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+ <div class="auth-card">
+ <div id="errBox" class="err"></div>
+
+ <!-- Step 1: Email -->
+ <div class="step active" id="s1">
+ <h2 class="auth-title">CREATE ACCOUNT</h2>
+ <p class="auth-sub">Enter your email — we'll send a verification code.</p>
+ <label class="form-label">Email Address</label>
+ <input type="email" id="emailInput" class="form-input" placeholder="your@email.com" autofocus>
+ <button class="form-btn" onclick="sendCode()"> Send Verification Code</button>
+ </div>
+
+ <!-- Step 2: OTP -->
+ <div class="step" id="s2">
+ <h2 class="auth-title">CHECK YOUR EMAIL</h2>
+ <p class="auth-sub" id="codeSentMsg">We sent a 6-digit code to your email.</p>
+ <div class="otp-digits">
+ <input class="otp-digit" id="d1" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d2" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d3" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d4" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d5" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d6" maxlength="1" inputmode="numeric">
+ </div>
+ <button class="form-btn" onclick="verifyCode()">✅ Verify Code</button>
+ <button class="back-btn" onclick="goTo('s1')">← Change email</button>
+ </div>
+
+ <!-- Step 3: Set Password -->
+ <div class="step" id="s3">
+ <h2 class="auth-title">SET YOUR PASSWORD</h2>
+ <p class="auth-sub">Choose a password to use every time you sign in.</p>
+ <label class="form-label">Password</label>
+ <input type="password" id="newPassword" class="form-input" placeholder="At least 6 characters">
+ <label class="form-label">Confirm Password</label>
+ <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password">
+ <button class="form-btn" onclick="setPassword()"> Create Account</button>
+ </div>
+ </div>
+ <div class="auth-footer">Already have an account? <a href="/login/">Sign in</a></div>
+</div>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script>
+let userEmail = null;
+
+function goTo(stepId) {
+ document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+ document.getElementById(stepId).classList.add('active');
+ hideErr();
+}
+
+async function sendCode() {
+ const em = document.getElementById('emailInput').value.trim();
+ if (!em || !em.includes('@') || !em.includes('.')) { showErr('Please enter a valid email address.'); return; }
+ userEmail = em;
+ try {
+ const r = await fetch('/api/send-otp/', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+ body: JSON.stringify({ email: em })
+ });
+ const d = await safeJson(r);
+ if (!r.ok) { showErr(d.error || d.message || d.detail || 'Please try again.'); return; }
+ document.getElementById('codeSentMsg').textContent = 'We sent a 6-digit code to ' + em;
+ goTo('s2'); setupDigits(); document.getElementById('d1').focus();
+ } catch(e) { showErr('Network error. Please try again.'); }
+}
+
+function setupDigits() {
+ const ids = ['d1','d2','d3','d4','d5','d6'], ins = ids.map(i => document.getElementById(i));
+ ins.forEach((inp, i) => {
+ inp.value = '';
+ inp.oninput = () => { inp.value = inp.value.replace(/\D/, ''); if (inp.value && i < 5) ins[i+1].focus(); };
+ inp.onkeydown = e => {
+ if (e.key === 'Backspace' && !inp.value && i > 0) ins[i-1].focus();
+ if (e.key === 'Enter') verifyCode();
+ };
+ });
+}
+
+async function verifyCode() {
+ const code = ['d1','d2','d3','d4','d5','d6'].map(i => document.getElementById(i).value).join('');
+ if (code.length !== 6) { showErr('Please enter the full 6-digit code.'); return; }
+ try {
+ const r = await fetch('/api/verify-otp/', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+ body: JSON.stringify({ email: userEmail, code, mode: 'register' })
+ });
+ const d = await safeJson(r);
+ if (!r.ok) { showErr(d.error || d.message || d.detail || 'Please try again.'); return; }
+ if (d.next === 'set_password') goTo('s3');
+ } catch(e) { showErr('Network error. Please try again.'); }
+}
+
+async function setPassword() {
+ const pw = document.getElementById('newPassword').value;
+ const pw2 = document.getElementById('confirmPassword').value;
+ if (pw.length < 6) { showErr('Password must be at least 6 characters.'); return; }
+ if (pw !== pw2) { showErr('Passwords do not match.'); return; }
+ try {
+ const r = await fetch('/api/register/set-password/', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+ body: JSON.stringify({ email: userEmail, password: pw })
+ });
+ const d = await safeJson(r);
+ if (!r.ok) { showErr(d.error || d.message || d.detail || 'Please try again.'); return; }
+ window.location.href = d.redirect || '/dashboard/';
+ } catch(e) { showErr('Network error. Please try again.'); }
+}
+
+function showErr(m) { const e = document.getElementById('errBox'); e.textContent = m; e.style.display = 'block'; }
+function hideErr() { document.getElementById('errBox').style.display = 'none'; }
+document.getElementById('emailInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendCode(); });
+</script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

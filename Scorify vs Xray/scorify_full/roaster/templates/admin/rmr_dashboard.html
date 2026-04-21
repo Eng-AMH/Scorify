@@ -1,0 +1,189 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<style>
+.scorify-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.scorify-card{background:#110e09;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;transition:.3s}
+.scorify-card:hover{border-color:rgba(255,106,61,.3);transform:translateY(-2px)}
+.scorify-card .val{font-size:2.5rem;font-weight:900;font-family:monospace;color:#ff6a3d;line-height:1;margin:8px 0 4px}
+.scorify-card .lbl{font-size:.72rem;color:#8a7a6a;letter-spacing:.12em;text-transform:uppercase}
+.scorify-card .icon{font-size:1.5rem;margin-bottom:8px}
+.scorify-section{background:#110e09;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px;margin-bottom:20px}
+.scorify-section h3{font-size:.72rem;color:#8a7a6a;letter-spacing:.15em;text-transform:uppercase;margin:0 0 18px;font-family:monospace}
+.scorify-table{width:100%;border-collapse:collapse}
+.scorify-table th{font-size:.62rem;color:#8a7a6a;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-family:monospace}
+.scorify-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;color:#c8b89a;vertical-align:middle}
+.scorify-table tr:last-child td{border-bottom:none}
+.scorify-table tr:hover td{background:rgba(255,106,61,.03)}
+.plan-pill{padding:2px 10px;border-radius:99px;font-size:.65rem;font-weight:700;font-family:monospace}
+.pill-free{background:rgba(100,116,139,.2);color:#94a3b8}
+.pill-pro{background:rgba(59,130,246,.2);color:#60a5fa}
+.pill-vip{background:rgba(255,106,61,.2);color:#ff6a3d}
+.score-dot{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-weight:800;font-size:.8rem;font-family:monospace}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.plan-bar{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.plan-bar .bar{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.plan-bar .fill{height:100%;border-radius:4px}
+.plan-bar .num{font-family:monospace;font-size:.85rem;color:#c8b89a;width:40px;text-align:right}
+canvas{max-height:180px}
+</style>
+
+<!-- STAT CARDS -->
+<div class="scorify-grid">
+ <div class="scorify-card">
+ <div class="icon">👥</div>
+ <div class="val">{{ total_users }}</div>
+ <div class="lbl">Total Users</div>
+ </div>
+ <div class="scorify-card">
+ <div class="icon">📄</div>
+ <div class="val">{{ total_analyses }}</div>
+ <div class="lbl">Total Analyses</div>
+ </div>
+ <div class="scorify-card">
+ <div class="icon">📅</div>
+ <div class="val">{{ today_uploads }}</div>
+ <div class="lbl">Uploads Today</div>
+ </div>
+ <div class="scorify-card">
+ <div class="icon">⭐</div>
+ <div class="val">{{ avg_score }}</div>
+ <div class="lbl">Avg Score</div>
+ </div>
+</div>
+
+<div class="two-col">
+ <!-- Plan distribution -->
+ <div class="scorify-section">
+ <h3>Plan Distribution</h3>
+ {% with total=free_users|add:pro_users|add:vip_users %}
+ <div class="plan-bar">
+ <span style="font-size:.8rem;color:#94a3b8;width:40px">FREE</span>
+ <div class="bar"><div class="fill" style="width:{% if total %}{% widthratio free_users total 100 %}%{% else %}0%{% endif %};background:#64748b"></div></div>
+ <span class="num">{{ free_users }}</span>
+ </div>
+ <div class="plan-bar">
+ <span style="font-size:.8rem;color:#60a5fa;width:40px">PRO</span>
+ <div class="bar"><div class="fill" style="width:{% if total %}{% widthratio pro_users total 100 %}%{% else %}0%{% endif %};background:#3b82f6"></div></div>
+ <span class="num">{{ pro_users }}</span>
+ </div>
+ <div class="plan-bar">
+ <span style="font-size:.8rem;color:#ff6a3d;width:40px">VIP</span>
+ <div class="bar"><div class="fill" style="width:{% if total %}{% widthratio vip_users total 100 %}%{% else %}0%{% endif %};background:#ff6a3d"></div></div>
+ <span class="num">{{ vip_users }}</span>
+ </div>
+ {% endwith %}
+ <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:16px">
+ <div><div style="font-size:.72rem;color:#8a7a6a">This Week</div><div style="font-size:1.5rem;font-weight:800;color:#ff6a3d;font-family:monospace">{{ week_uploads }}</div></div>
+ <div><div style="font-size:.72rem;color:#8a7a6a">Active OTPs</div><div style="font-size:1.5rem;font-weight:800;color:#8b5cf6;font-family:monospace">{{ active_otps }}</div></div>
+ </div>
+ </div>
+
+ <!-- 7-day chart -->
+ <div class="scorify-section">
+ <h3>Uploads — Last 7 Days</h3>
+ <canvas id="dailyChart"></canvas>
+ </div>
+</div>
+
+<div class="two-col">
+ <!-- Recent Analyses -->
+ <div class="scorify-section">
+ <h3>Recent Analyses</h3>
+ <table class="scorify-table">
+ <thead><tr><th>Score</th><th>File</th><th>User</th><th>Plan</th></tr></thead>
+ <tbody>
+ {% for a in recent_analyses %}
+ <tr>
+ <td>
+ {% if a.overall_score is not None %}
+ {% if a.overall_score < 40 %}
+ <span class="score-dot" style="background:rgba(248,113,113,.15);color:#f87171">{{ a.overall_score }}</span>
+ {% elif a.overall_score < 65 %}
+ <span class="score-dot" style="background:rgba(139,92,246,.15);color:#8b5cf6">{{ a.overall_score }}</span>
+ {% else %}
+ <span class="score-dot" style="background:rgba(74,222,128,.12);color:#4ade80">{{ a.overall_score }}</span>
+ {% endif %}
+ {% else %}—{% endif %}
+ </td>
+ <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:.75rem">{{ a.original_filename }}</td>
+ <td>{% if a.user %}<span style="color:#8b5cf6">{{ a.user.username }}</span>{% else %}<span style="color:#555;font-style:italic">Anon</span>{% endif %}</td>
+ <td><span class="plan-pill pill-{{ a.plan_used }}">{{ a.plan_used|upper }}</span></td>
+ </tr>
+ {% empty %}
+ <tr><td colspan="4" style="text-align:center;color:#555;padding:24px">No analyses yet</td></tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+
+ <!-- Recent Users -->
+ <div class="scorify-section">
+ <h3>Recent Users</h3>
+ <table class="scorify-table">
+ <thead><tr><th>User</th><th>Plan</th><th>Joined</th></tr></thead>
+ <tbody>
+ {% for u in recent_users %}
+ <tr>
+ <td>
+ <div style="font-weight:600;color:#fff8ee">{{ u.username }}</div>
+ <div style="font-size:.72rem;color:#8a7a6a">{{ u.email }}</div>
+ </td>
+ <td>
+ {% if u.profile.plan == 'vip' %}<span class="plan-pill pill-vip"> VIP</span>
+ {% elif u.profile.plan == 'pro' %}<span class="plan-pill pill-pro">🔵 PRO</span>
+ {% else %}<span class="plan-pill pill-free">⚪ FREE</span>{% endif %}
+ </td>
+ <td style="font-family:monospace;font-size:.75rem;color:#8a7a6a">{{ u.date_joined|date:"M d, Y" }}</td>
+ </tr>
+ {% empty %}
+ <tr><td colspan="3" style="text-align:center;color:#555;padding:24px">No users yet</td></tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ <div style="margin-top:16px;text-align:center">
+ <a href="/admin/auth/user/" style="color:#ff6a3d;font-size:.82rem;text-decoration:none;font-weight:600">View all users →</a>
+ </div>
+ </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="scorify-section">
+ <h3>Quick Actions</h3>
+ <div style="display:flex;gap:12px;flex-wrap:wrap">
+ <a href="/admin/roaster/userprofile/" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:rgba(255,106,61,.1);border:1px solid rgba(255,106,61,.25);color:#ff6a3d;text-decoration:none;font-size:.85rem;font-weight:600;transition:.2s" onmouseover="this.style.background='rgba(255,106,61,.2)'" onmouseout="this.style.background='rgba(255,106,61,.1)'">👥 Manage Users</a>
+ <a href="/admin/roaster/cvanalysis/" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#8b5cf6;text-decoration:none;font-size:.85rem;font-weight:600;transition:.2s" onmouseover="this.style.background='rgba(139,92,246,.2)'" onmouseout="this.style.background='rgba(139,92,246,.1)'">📄 View Analyses</a>
+ <a href="/admin/roaster/otpcode/" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:#4ade80;text-decoration:none;font-size:.85rem;font-weight:600;transition:.2s" onmouseover="this.style.background='rgba(74,222,128,.15)'" onmouseout="this.style.background='rgba(74,222,128,.08)'">🔑 OTP Codes</a>
+ <a href="/admin/auth/user/add/" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:#60a5fa;text-decoration:none;font-size:.85rem;font-weight:600;transition:.2s" onmouseover="this.style.background='rgba(59,130,246,.2)'" onmouseout="this.style.background='rgba(59,130,246,.1)'">➕ Add User</a>
+ <a href="/" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#c8b89a;text-decoration:none;font-size:.85rem;font-weight:600;transition:.2s" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">🌐 View Site</a>
+ </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const daily = {{ daily_json|safe }};
+const ctx = document.getElementById('dailyChart').getContext('2d');
+new Chart(ctx, {
+ type: 'bar',
+ data: {
+ labels: daily.map(d => d.label),
+ datasets: [{
+ label: 'Uploads',
+ data: daily.map(d => d.count),
+ backgroundColor: 'rgba(255,106,61,.3)',
+ borderColor: '#ff6a3d',
+ borderWidth: 2,
+ borderRadius: 6,
+ }]
+ },
+ options: {
+ responsive: true,
+ maintainAspectRatio: false,
+ plugins: { legend: { display: false } },
+ scales: {
+ y: { beginAtZero: true, ticks: { color: '#8a7a6a', precision: 0, font: { family: 'monospace' } }, grid: { color: 'rgba(255,255,255,.04)' } },
+ x: { ticks: { color: '#8a7a6a', font: { family: 'monospace', size: 11 } }, grid: { display: false } }
+ }
+ }
+});
+</script>
+{% endblock %}

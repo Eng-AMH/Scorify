@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Private Profile — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center">
+<div class="page-utility-bar">
+  <div id="globeWrap"></div>
+  <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<div>
+  <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
+  <div style="font-family:var(--font-d);font-size:2rem;letter-spacing:.05em">PRIVATE PROFILE</div>
+  <p style="color:var(--smoke);margin:1rem 0">{{ username }}'s profile is private.</p>
+  <a href="/" class="btn btn-fire">← Go Home</a>
+</div>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

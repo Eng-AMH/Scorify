@@ -1,0 +1,421 @@
+{% extends 'roaster/base.html' %}
+{% load static %}
+
+{% block title %}Scorify — AI Resume Analyzer{% endblock %}
+
+{% block meta_description %}AI Resume Analyzer. Get brutally honest resume feedback instantly.{% endblock %}
+{% block meta_keywords %}AI resume analyzer,resume checker,CV review,ATS score,resume feedback,resume optimization{% endblock %}
+{% block canonical %}{{ site_url }}/{% endblock %}
+
+{% block og_title %}Scorify — AI Resume Analyzer{% endblock %}
+{% block og_description %}Get brutally honest AI feedback on your resume instantly.{% endblock %}
+{% block og_url %}{{ site_url }}/{% endblock %}
+
+{% block twitter_title %}Scorify — AI Resume Analyzer{% endblock %}
+{% block twitter_description %}Get brutally honest AI feedback on your resume instantly.{% endblock %}
+{% block twitter_image %}{% static 'roaster/img/og-image.png' %}{% endblock %}
+
+{% block extra_head %}
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scorify">
+
+<meta property="og:title" content="Scorify — AI Resume Analyzer">
+<meta property="og:description" content="Upload your resume and get brutally honest AI feedback instantly.">
+<meta property="og:url" content="{{ site_url }}/">
+
+<meta property="og:image" content="{% static 'roaster/img/og-image.png' %}">
+<meta property="og:image:url" content="{% static 'roaster/img/og-image.png' %}">
+<meta property="og:image:secure_url" content="{% static 'roaster/img/og-image.png' %}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Scorify AI Resume Analyzer">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Scorify — AI Resume Analyzer">
+<meta name="twitter:description" content="Upload your resume and get brutally honest AI feedback instantly.">
+<meta name="twitter:image" content="{% static 'roaster/img/og-image.png' %}">
+
+<link rel="stylesheet" href="{% static 'roaster/css/index.css' %}">
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"WebPage",
+ "name":"Scorify",
+ "url":"{{ site_url }}/",
+ "description":"AI Resume Analyzer. Get brutally honest resume feedback instantly."
+}
+</script>
+
+{% endblock %}
+
+{% block content %}
+<nav id="navbar">
+ <!-- hidden el for JS pro check -->
+ <a href="/" class="nav-brand">
+ <div class="nav-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>
+ <span class="nav-logo-text">Scorify</span>
+ </a>
+ <ul class="nav-links">
+ <li><a href="#how" data-i18n="nav-how">How it Works</a></li>
+ <li><a href="#features" data-i18n="nav-features">Features</a></li>
+ <li><a href="#pricing" data-i18n="nav-pricing">Pricing</a></li>
+ </ul>
+ <div class="nav-cta">
+ {% if user.is_authenticated %}
+ <a href="/dashboard/" class="btn btn-ghost" data-i18n="nav-dashboard">Dashboard</a>
+ {% else %}
+ <a href="/login/" class="btn btn-ghost" data-i18n="nav-signin">Sign In</a>
+ {% endif %}
+ <div id="globeWrapNav" style="display:inline-block"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" title="Toggle theme"
+ style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);
+ background:rgba(255,255,255,.05);color:var(--smoke);cursor:pointer;
+ font-size:1rem;display:flex;align-items:center;justify-content:center">☀️</button>
+ <div class="mode-selector" id="mainModeSelector"></div>
+ <a href="#demo" class="btn btn-fire" id="navModeBtn">Scorify</a>
+ </div>
+
+  <!-- Mobile burger -->
+  <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile nav drawer -->
+<div class="nav-drawer" id="navDrawer" aria-hidden="true">
+  <div class="nav-drawer-inner">
+    <div class="nav-drawer-links">
+      <a href="#how"      data-i18n="nav-how"      class="nav-drawer-link">How it Works</a>
+      <a href="#features" data-i18n="nav-features"  class="nav-drawer-link">Features</a>
+      <a href="#pricing"  data-i18n="nav-pricing"   class="nav-drawer-link">Pricing</a>
+    </div>
+    <div class="nav-drawer-divider"></div>
+    <div class="nav-drawer-actions">
+      {% if user.is_authenticated %}
+      <a href="/dashboard/" class="btn btn-ghost" style="width:100%;justify-content:center" data-i18n="nav-dashboard">Dashboard</a>
+      {% else %}
+      <a href="/login/"     class="btn btn-ghost" style="width:100%;justify-content:center" data-i18n="nav-signin">Sign In</a>
+      {% endif %}
+      <a href="#demo" class="btn btn-fire" style="width:100%;justify-content:center" id="drawerModeBtn">Score My CV — Free</a>
+    </div>
+    <div class="nav-drawer-bottom">
+      <div class="mode-selector" id="drawerModeSelector"></div>
+      <button type="button" onclick="toggleTheme()" class="nav-drawer-theme">☀️ Toggle Theme</button>
+    </div>
+  </div>
+</div>
+<div class="nav-drawer-overlay" id="navDrawerOverlay"></div>
+
+<main>
+<!-- HERO -->
+<div class="hero">
+ <div class="hero-grid"></div>
+ <div class="blob blob-1"></div>
+ <div class="blob blob-2"></div>
+ <div class="blob blob-3"></div>
+ <div class="hero-tag" data-i18n="hero-tag" data-mode-key="hero-tag">AI-Powered Brutal Honesty</div>
+ <h1 class="hero-title">
+ <span class="line-1" data-i18n="hero-line1" data-mode-key="hero-line1">TURN YOUR CV</span>
+ <span class="line-2" data-i18n="hero-line2" data-mode-key="hero-line2">INTO A SCORE.</span>
+ </h1>
+ <p class="hero-sub" data-i18n="hero-sub" data-mode-key="hero-sub">Get instant insights. Improve faster. Land better jobs.</p>
+ <div class="hero-actions">
+ <a href="#demo" class="btn btn-fire btn-lg" id="heroBtn" data-i18n="hero-cta1" data-mode-key="hero-cta1">Score My CV — Free</a>
+ <a href="#how" class="btn btn-ghost btn-lg" data-i18n="hero-cta2" data-mode-key="hero-cta2">See How It Works →</a>
+ </div>
+ <div class="score-preview">
+ <div class="score-card">
+ <div class="sc-circle" style="color:#f87171">
+ <svg viewBox="0 0 66 66"><circle cx="33" cy="33" r="27" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"/><circle cx="33" cy="33" r="27" fill="none" stroke="#f87171" stroke-width="5" stroke-dasharray="169.6" stroke-dashoffset="135" stroke-linecap="round"/></svg>
+ <span>32</span>
+ </div>
+ <div>
+ <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m)" data-i18n="sample-name1" data-mode-key="sample-name1">Ahmed's CV</div>
+ <div style="font-family:var(--font-d);font-size:1.3rem;color:#f87171;letter-spacing:.03em" data-i18n="verdict-bad" data-mode-key="verdict-bad">NEEDS WORK</div>
+ </div>
+ </div>
+ <div class="score-card">
+ <div class="sc-circle" style="color:var(--amber)">
+ <svg viewBox="0 0 66 66"><circle cx="33" cy="33" r="27" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"/><circle cx="33" cy="33" r="27" fill="none" stroke="#8b5cf6" stroke-width="5" stroke-dasharray="169.6" stroke-dashoffset="85" stroke-linecap="round"/></svg>
+ <span>61</span>
+ </div>
+ <div>
+ <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m)" data-i18n="sample-name2" data-mode-key="sample-name2">Sara's CV</div>
+ <div style="font-family:var(--font-d);font-size:1.3rem;color:var(--amber);letter-spacing:.03em" data-i18n="verdict-mid" data-mode-key="verdict-mid">GETTING THERE</div>
+ </div>
+ </div>
+ <div class="score-card">
+ <div class="sc-circle" style="color:#4ade80">
+ <svg viewBox="0 0 66 66"><circle cx="33" cy="33" r="27" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"/><circle cx="33" cy="33" r="27" fill="none" stroke="#4ade80" stroke-width="5" stroke-dasharray="169.6" stroke-dashoffset="22" stroke-linecap="round"/></svg>
+ <span>87</span>
+ </div>
+ <div>
+ <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m)" data-i18n="sample-name3" data-mode-key="sample-name3">John's CV</div>
+ <div style="font-family:var(--font-d);font-size:1.3rem;color:#4ade80;letter-spacing:.03em" data-i18n="verdict-good" data-mode-key="verdict-good">PRETTY SOLID</div>
+ </div>
+ </div>
+ </div>
+ <div class="scroll-hint"><span data-i18n="scroll-hint">Scroll</span><span class="scroll-line"></span></div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+ <div class="ticker" id="tickerTrack">
+ <span class="ticker-item"><strong id="tTotal">47,000+</strong> <span data-i18n="ticker-roasted" data-mode-key="ticker-action">CVs Analyzed</span> <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-avg-label">Average Score:</span> <strong id="tAvg">58</strong>/100 <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-problem-label">Most Common Problem:</span> <strong data-i18n="ticker-problem-val" data-mode-key="ticker-problem">Generic Objective Statement</strong> <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-improve-label">Top Improvement:</span> <strong data-i18n="ticker-improve-val" data-mode-key="ticker-improve">+34 points after fixes</strong> <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-support-label">Supported:</span> <strong data-i18n="ticker-support-val">PDF · Word · All Languages</strong> <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><strong>47,000+</strong> <span data-i18n="ticker-roasted">CVs Analyzed</span> <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-avg-label">Average Score:</span> <strong>58</strong>/100 <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-problem-label">Most Common Problem:</span> <strong data-i18n="ticker-problem-val">Generic Objective Statement</strong> <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-improve-label">Top Improvement:</span> <strong data-i18n="ticker-improve-val">+34 points after fixes</strong> <span style="opacity:.3">✦</span></span>
+ <span class="ticker-item"><span data-i18n="ticker-support-label">Supported:</span> <strong data-i18n="ticker-support-val">PDF · Word · All Languages</strong> <span style="opacity:.3">✦</span></span>
+ </div>
+</div>
+<div class="divider"></div>
+
+<!-- HOW -->
+<section id="how">
+ <div class="section-wrap">
+ <div class="center reveal">
+ <div class="s-label" data-i18n="how-label" data-mode-key="how-label">The Process</div>
+ <h2 class="s-title" data-i18n="how-title" data-mode-key="how-title">THREE STEPS TO THE TRUTH</h2>
+ <p class="s-sub" data-i18n="how-sub" data-mode-key="how-sub">No fluff. No sugar-coating. Just cold hard feedback that actually helps.</p>
+ </div>
+ <div class="steps">
+ <div class="step reveal rd1">
+ <div class="step-num sn1">01</div>
+ <h3 class="step-title" data-i18n="step1-title" data-mode-key="step1-title">UPLOAD YOUR FILE</h3>
+ <p class="step-desc" data-i18n="step1-desc" data-mode-key="step1-desc">Upload any PDF or Word document. All formats, all languages, all document types.</p>
+ </div>
+ <div class="step reveal rd2">
+ <div class="step-num sn2">02</div>
+ <h3 class="step-title" data-i18n="step2-title" data-mode-key="step2-title">AI ANALYZES IT</h3>
+ <p class="step-desc" data-i18n="step2-desc" data-mode-key="step2-desc">Our AI reads every line, scores every section, and delivers brutally honest feedback in under 30 seconds.</p>
+ </div>
+ <div class="step reveal rd3">
+ <div class="step-num sn3">03</div>
+ <h3 class="step-title" data-i18n="step3-title" data-mode-key="step3-title">YOU FIX IT</h3>
+ <p class="step-desc" data-i18n="step3-desc" data-mode-key="step3-desc">Get a prioritized list of exactly what to change, with rewrite suggestions that sound human.</p>
+ </div>
+ </div>
+ </div>
+</section>
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<div class="feats-bg" id="features">
+ <div class="section-wrap">
+ <div class="center reveal">
+ <div class="s-label" data-i18n="feat-label" data-mode-key="feat-label">What We Analyze</div>
+ <h2 class="s-title" data-i18n="feat-title" data-mode-key="feat-title">NOTHING GETS PAST US</h2>
+ <p class="s-sub" data-i18n="feat-sub" data-mode-key="feat-sub">Every section of your document gets put under the microscope.</p>
+ </div>
+ <div class="feats">
+ <div class="feat reveal rd1">
+ <div class="feat-icon fi1">🎯</div>
+ <h3 class="feat-title" data-i18n="feat1-title" data-mode-key="feat1-title">IMPACT SCORE</h3>
+ <p class="feat-desc" data-i18n="feat1-desc" data-mode-key="feat1-desc">We measure how strong your bullet points are. Vague fluff gets flagged, quantified achievements get rewarded.</p>
+ </div>
+ <div class="feat reveal rd2">
+ <div class="feat-icon fi2">🔍</div>
+ <h3 class="feat-title" data-i18n="feat2-title" data-mode-key="feat2-title">ATS CHECK</h3>
+ <p class="feat-desc" data-i18n="feat2-desc" data-mode-key="feat2-desc">Know if your CV will survive robot screeners before it reaches human eyes.</p>
+ </div>
+ <div class="feat reveal rd3">
+ <div class="feat-icon fi3">✍️</div>
+ <h3 class="feat-title" data-i18n="feat3-title" data-mode-key="feat3-title">LANGUAGE QUALITY</h3>
+ <p class="feat-desc" data-i18n="feat3-desc" data-mode-key="feat3-desc">Grammar, clarity, tone — all checked. Weak phrases and clichés get flagged immediately.</p>
+ </div>
+ <div class="feat reveal rd1">
+ <div class="feat-icon fi4">📊</div>
+ <h3 class="feat-title" data-i18n="feat4-title" data-mode-key="feat4-title">SECTION ANALYSIS</h3>
+ <p class="feat-desc" data-i18n="feat4-desc" data-mode-key="feat4-desc">From summary to skills section, every part gets its own score and specific feedback.</p>
+ </div>
+ <div class="feat reveal rd2">
+ <div class="feat-icon fi5">💼</div>
+ <h3 class="feat-title" data-i18n="feat5-title" data-mode-key="feat5-title">JOB MATCH</h3>
+ <p class="feat-desc" data-i18n="feat5-desc" data-mode-key="feat5-desc">Paste any job description and see exactly how well your CV matches and what's missing.</p>
+ </div>
+ <div class="feat reveal rd3">
+ <div class="feat-icon fi6">⚡</div>
+ <h3 class="feat-title" data-i18n="feat6-title" data-mode-key="feat6-title">INSTANT REWRITE</h3>
+ <p class="feat-desc" data-i18n="feat6-desc" data-mode-key="feat6-desc">Not just feedback — actual rewritten sentences you can copy directly into your document.</p>
+ </div>
+ </div>
+ </div>
+</div>
+<div class="divider"></div>
+
+<!-- DEMO -->
+<div class="demo-wrap" id="demo">
+ <div class="demo-bg"></div>
+ <div style="max-width:1300px;margin:0 auto;position:relative">
+ <div class="center reveal">
+ <div class="s-label" data-i18n="demo-label" data-mode-key="demo-label">Try It Now</div>
+ <h2 class="s-title" data-i18n="demo-title" data-mode-key="demo-title">UPLOAD YOUR FILE & GET ANALYZED</h2>
+ </div>
+ <div class="demo-card reveal scale">
+ <div class="demo-bar">
+ <div class="d-dot" style="background:#ff5f57"></div>
+ <div class="d-dot" style="background:#febc2e;margin-left:6px"></div>
+ <div class="d-dot" style="background:#28c840;margin-left:6px"></div>
+ <span style="font-family:var(--font-m);font-size:.72rem;color:var(--smoke);margin-left:12px" data-i18n="demo-bar-label" data-mode-key="demo-bar-label">scorify.app — analyzing your document</span>
+ <div id="statusPill" style="margin-left:auto;padding:3px 12px;border-radius:99px;background:rgba(255,106,61,.08);border:1px solid rgba(255,106,61,.2);font-family:var(--font-m);font-size:.62rem;color:var(--smoke);letter-spacing:.1em" data-i18n="status-ready" data-mode-key="status-ready">READY</div>
+ </div>
+ <div class="demo-body">
+ <div class="demo-upload" id="uploadZone">
+ <div class="upload-icon">📄</div>
+ <div style="font-size:.95rem;color:var(--smoke)">
+ <strong style="color:var(--cream)" data-i18n="upload-drop" data-mode-key="upload-drop">Drop your file here</strong>
+ <span data-i18n="upload-or" data-mode-key="upload-or"> or click to browse</span>
+ </div>
+ <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m)" data-i18n="upload-hint" data-mode-key="upload-hint">PDF or Word · Max 5MB · Any document type · Free</div>
+ </div>
+ <div class="demo-result" id="resultArea">
+ <div style="text-align:center;color:var(--smoke)">
+ <div style="font-size:2rem;margin-bottom:.75rem;opacity:.3"></div>
+ <div style="font-size:.875rem" data-i18n="upload-result-default" data-mode-key="upload-result-default">Upload your document to see the analysis</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+<div class="divider"></div>
+
+<!-- PRICING -->
+<div style="padding:clamp(5rem,10vw,8rem) clamp(1.5rem,5vw,4rem)" id="pricing">
+ <div class="center reveal">
+ <div class="s-label" data-i18n="price-label" data-mode-key="price-label">Simple Pricing</div>
+ <h2 class="s-title" data-i18n="price-title" data-mode-key="price-title">FREE TO BURN, PAY TO REBUILD</h2>
+ <p class="s-sub" data-i18n="price-sub" data-mode-key="price-sub">Start free. Upgrade when you're ready to get serious.</p>
+ </div>
+ <div class="plans">
+ <div class="plan reveal rd1">
+ <div class="plan-name" data-i18n="plan-free-name">FREE</div>
+ <div class="plan-price"><span class="num">$0</span><span class="per" data-i18n="plan-free-per">/ forever</span></div>
+ <div class="plan-desc" data-i18n="plan-free-desc">Get the analysis. See what's wrong.</div>
+ <ul class="plan-feats">
+ <li class="yes" data-i18n="pf1">Overall Score</li>
+ <li class="yes" data-i18n="pf2">3 Analysis Lines</li>
+ <li class="yes" data-i18n="pf3">1 Top Fix</li>
+ <li class="yes" data-i18n="pf4">3 Documents per day</li>
+ <li class="no" data-i18n="pf5">Section Analysis</li>
+ <li class="no" data-i18n="pf6">Rewrite Suggestions</li>
+ <li class="no" data-i18n="pf7">Career Advice</li>
+ </ul>
+ <a href="#demo" class="btn btn-ghost" style="width:100%;justify-content:center;padding:14px;display:flex" data-i18n="plan-free-btn">Start Free →</a>
+ </div>
+
+ <div class="plan plan-popular reveal rd2">
+ <div class="plan-badge pb-fire" data-i18n="plan-pro-badge">POPULAR</div>
+ <div class="plan-name" style="color:var(--fire)">PRO</div>
+ <div class="plan-price"><span class="num" style="color:var(--fire)">$5</span><span class="per" data-i18n="plan-per-month">/ month</span></div>
+ <div class="plan-desc" data-i18n="plan-pro-desc">Full analysis. Unlimited uploads.</div>
+ <ul class="plan-feats">
+ <li class="yes" data-i18n="pp1">Everything in Free</li>
+ <li class="yes" data-i18n="pp2">Full Section Analysis</li>
+ <li class="yes" data-i18n="pp3">8 Analysis Lines</li>
+ <li class="yes" data-i18n="pp4">Top 3 Fixes</li>
+ <li class="yes" data-i18n="pp5">ATS Check</li>
+ <li class="yes" data-i18n="pp6">Job Match Score</li>
+ <li class="yes" data-i18n="pp7">Unlimited Uploads</li>
+ </ul>
+ <a href="/upgrade/?plan=pro" class="btn btn-fire" style="width:100%;justify-content:center;padding:14px;display:flex" data-i18n="plan-pro-btn"> Get Pro →</a>
+ </div>
+
+ <div class="plan plan-vip-card reveal rd3">
+ <div class="plan-badge pb-gold">VIP</div>
+ <div class="plan-name" style="color:#f59e0b">VIP</div>
+ <div class="plan-price"><span class="num" style="color:#f59e0b">$15</span><span class="per" data-i18n="plan-per-month">/ month</span></div>
+ <div class="plan-desc" data-i18n="plan-vip-desc">The ultimate career weapon.</div>
+ <ul class="plan-feats">
+ <li class="yes" data-i18n="pv1">Everything in Pro</li>
+ <li class="yes" data-i18n="pv2">AI Rewrite Suggestions</li>
+ <li class="yes" data-i18n="pv3">Career Path Advice</li>
+ <li class="yes" data-i18n="pv4">Salary Estimate</li>
+ <li class="yes" data-i18n="pv5">Interview Questions</li>
+ <li class="yes" data-i18n="pv6">LinkedIn Tips</li>
+ <li class="yes" data-i18n="pv7">Industry Benchmark</li>
+ </ul>
+ <a href="/upgrade/?plan=vip" class="btn btn-vip" style="width:100%;justify-content:center;padding:14px;display:flex" data-i18n="plan-vip-btn">🏆 Get VIP →</a>
+ </div>
+ </div>
+</div>
+
+<div style="padding:0 clamp(1.5rem,5vw,4rem) clamp(5rem,10vw,8rem);max-width:1300px;margin:0 auto">
+ <div class="cta-card reveal scale">
+ <div class="s-label" style="text-align:center" data-i18n="cta-label">Ready?</div>
+ <h2 class="cta-title" data-mode-key="cta-title-text" data-i18n="cta-title">YOUR DREAM JOB<br><span data-i18n="cta-title2">WON'T WAIT</span></h2>
+ <p style="font-size:1.05rem;color:var(--smoke);margin-bottom:2.5rem" data-i18n="cta-sub">Stop sending documents into the void. Find out what's actually wrong — for free.</p>
+ <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+ <a href="#demo" class="btn btn-fire btn-lg" data-i18n="cta-btn1">Score My CV — Free</a>
+ <a href="#pricing" class="btn btn-ghost btn-lg" data-i18n="cta-btn2">View Pricing →</a>
+ </div>
+ </div>
+</div>
+
+<footer class="reveal">
+ <div class="footer-brand"><div class="footer-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>Scorify</div>
+ <div class="footer-links">
+ <a href="#how" data-i18n="nav-how">How it Works</a>
+ <a href="#features" data-i18n="nav-features">Features</a>
+ <a href="#pricing" data-i18n="nav-pricing">Pricing</a>
+ <a href="/login/" data-i18n="nav-signin">Sign In</a>
+ </div>
+ <div class="footer-copy" data-i18n="footer-copy">© 2025 Scorify</div>
+</footer>
+</main>
+
+<div class="otp-overlay" id="otpOverlay">
+ <div class="otp-card">
+ <button class="otp-close" onclick="closeOTP()">X</button>
+ <div class="otp-logo"><div class="otp-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>Scorify</div>
+ <div id="stepEmail">
+ <div class="preview-box">
+ <div style="font-size:.65rem;color:var(--smoke);font-family:var(--font-m);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px" data-i18n="otp-your-score">Your Score</div>
+ <div class="preview-num" id="prevScore">--</div>
+ <div class="preview-lbl" id="prevVerdict" data-i18n="otp-analyzing">Analyzing...</div>
+ </div>
+ <h3 class="otp-h" data-i18n="otp-unlock-title">🔒 UNLOCK FULL ANALYSIS</h3>
+ <p class="otp-p" data-i18n="otp-unlock-sub">Enter your email to unlock section scores, top fixes, ATS check & more.</p>
+ <input type="email" id="otpEmail" class="otp-inp" data-i18n-ph="otp-email-ph">
+ <button class="otp-btn" onclick="sendOTP()" data-i18n="otp-send-btn"> Send Verification Code</button>
+ <div class="otp-note" data-i18n="otp-note">No password needed · Free forever · 3 documents/day</div>
+ </div>
+ <div id="stepCode" style="display:none">
+ <h3 class="otp-h" data-i18n="otp-check-email">CHECK YOUR EMAIL</h3>
+ <p class="otp-p" id="otpMsg" data-i18n="otp-code-sent">Code sent!</p>
+ <div class="otp-digits">
+ <input class="otp-digit" id="d1" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d2" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d3" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d4" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d5" maxlength="1" inputmode="numeric">
+ <input class="otp-digit" id="d6" maxlength="1" inputmode="numeric">
+ </div>
+ <button class="otp-btn" onclick="verifyOTP()" data-i18n="otp-verify-btn"> Verify & Unlock</button>
+ <div class="otp-note"><button onclick="backToEmail()" style="background:none;border:none;color:var(--smoke);cursor:pointer;font-size:.78rem" data-i18n="otp-back">← Change email</button></div>
+ </div>
+ <div id="otpErr" class="otp-err"></div>
+ </div>
+</div>
+
+<div class="loading" id="loadingEl">
+ <div class="loading-fire"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>
+ <div class="loading-title" data-i18n="loading-title">ANALYZING YOUR DOCUMENT...</div>
+ <div class="loading-sub" data-i18n="loading-sub">brutal honesty incoming</div>
+ <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+</div>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/index.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+{% endblock %}

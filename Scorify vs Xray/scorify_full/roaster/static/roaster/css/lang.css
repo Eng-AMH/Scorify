@@ -1,0 +1,58 @@
+/* ============================================================
+   lang.css — RTL + Language toggle styling
+   ============================================================ */
+
+/* ── RTL adjustments ─────────────────────────────────────── */
+body[dir="rtl"] .sidebar           { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border); }
+body[dir="rtl"] .main              { margin-left: 0; margin-right: 260px; }
+body[dir="rtl"] .sb-link           { flex-direction: row-reverse; }
+body[dir="rtl"] .sb-nav            { text-align: right; }
+body[dir="rtl"] .topbar            { flex-direction: row-reverse; }
+body[dir="rtl"] nav                { flex-direction: row-reverse; }
+body[dir="rtl"] .nav-links         { flex-direction: row-reverse; }
+body[dir="rtl"] .hero-actions      { flex-direction: row-reverse; }
+body[dir="rtl"] .stat-card         { text-align: right; }
+body[dir="rtl"] .card-title        { flex-direction: row-reverse; }
+body[dir="rtl"] .history-table th,
+body[dir="rtl"] .history-table td  { text-align: right; }
+body[dir="rtl"] .limit-bar         { flex-direction: row-reverse; }
+body[dir="rtl"] .modal-head        { flex-direction: row-reverse; }
+body[dir="rtl"] .m-score-row       { flex-direction: row-reverse; }
+body[dir="rtl"] .auth-wrap         { direction: rtl; }
+body[dir="rtl"] .profile-header    { flex-direction: row-reverse; }
+body[dir="rtl"] .form-row          { direction: rtl; }
+body[dir="rtl"] .roast-line        { flex-direction: row-reverse; border-left: none; border-right: 3px solid; }
+body[dir="rtl"] .rl-fire           { border-color: var(--fire); }
+body[dir="rtl"] .rl-amber          { border-color: var(--amber); }
+body[dir="rtl"] .rl-green          { border-color: #4ade80; }
+body[dir="rtl"] .vip-list li::before { content: '←'; }
+
+/* ── Language toggle button ──────────────────────────────── */
+#langToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: .75rem;
+  font-weight: 700;
+  font-family: var(--font-m);
+  letter-spacing: .05em;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--smoke);
+  transition: .25s;
+}
+#langToggleBtn:hover {
+  border-color: var(--border2);
+  color: var(--cream);
+  background: rgba(255,77,0,.06);
+}
+
+/* ── Arabic font improvement ─────────────────────────────── */
+:lang(ar) body,
+body[dir="rtl"] {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-size: 1.02em;
+}

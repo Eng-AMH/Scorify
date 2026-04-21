@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leaderboard — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<style>
+.lb-wrap{max-width:900px;margin:0 auto;padding:2rem 1.25rem}
+.lb-header{text-align:center;margin-bottom:2rem}
+.lb-title{font-family:var(--font-d);font-size:2.5rem;color:var(--cream);letter-spacing:.05em;margin-bottom:.25rem}
+.lb-sub{color:var(--smoke);font-size:.9rem}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;text-align:center}
+.stat-val{font-family:var(--font-d);font-size:2rem;color:var(--fire)}
+.stat-lbl{font-size:.72rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.lb-table{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.lb-row{display:grid;grid-template-columns:56px 1fr 100px 100px 80px;align-items:center;padding:.875rem 1.25rem;border-bottom:1px solid var(--border);transition:.15s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(255,255,255,.02)}
+.lb-row.header{font-size:.65rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.12em;padding:.625rem 1.25rem;border-bottom:1px solid var(--border2)}
+.rank{font-family:var(--font-d);font-size:1.4rem;text-align:center}
+.rank.gold{color:#8b5cf6}.rank.silver{color:#94a3b8}.rank.bronze{color:#cd7c2f}
+.user-name{font-weight:600;font-size:.9rem;color:var(--cream)}
+.user-anon{color:var(--smoke);font-size:.85rem}
+.score-pill{display:inline-block;padding:4px 12px;border-radius:99px;font-family:var(--font-m);font-weight:800;font-size:.85rem;text-align:center}
+.sc-fire{background:rgba(239,68,68,.12);color:#f87171}
+.sc-amber{background:rgba(139,92,246,.12);color:#8b5cf6}
+.sc-green{background:rgba(74,222,128,.12);color:#4ade80}
+.plan-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.dot-free{background:#64748b}.dot-pro{background:#3b82f6}.dot-vip{background:#ff6a3d}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:10px;border:1px solid var(--border);color:var(--smoke);text-decoration:none;font-size:.82rem;margin-bottom:1.5rem;transition:.2s}
+.back-btn:hover{border-color:var(--border2);color:var(--cream)}
+@media(max-width:600px){.lb-row{grid-template-columns:40px 1fr 80px;}.lb-row .date-col,.lb-row .plan-col{display:none}}
+</style>
+</head>
+<body style="background:var(--bg);min-height:100vh">
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<div class="lb-wrap">
+ <a href="{% if profile %}/dashboard/{% else %}/{% endif %}" class="back-btn">← Back</a>
+
+ <div class="lb-header">
+ <div class="lb-title">🏆 LEADERBOARD</div>
+ <div class="lb-sub">Top CV scores on Scorify</div>
+ </div>
+
+ <div class="stats-row">
+ <div class="stat-box">
+ <div class="stat-val">{{ stats.total|default:0 }}</div>
+ <div class="stat-lbl">Total analyses</div>
+ </div>
+ <div class="stat-box">
+ <div class="stat-val">{{ stats.avg|floatformat:0|default:0 }}</div>
+ <div class="stat-lbl">Average score</div>
+ </div>
+ <div class="stat-box">
+ <div class="stat-val" style="color:#4ade80">{{ stats.best|default:0 }}</div>
+ <div class="stat-lbl">Best score ever</div>
+ </div>
+ </div>
+
+ <div class="lb-table">
+ <div class="lb-row header">
+ <div style="text-align:center">Rank</div>
+ <div>User</div>
+ <div style="text-align:center">Score</div>
+ <div class="date-col">Date</div>
+ <div class="plan-col">Plan</div>
+ </div>
+ {% for entry in entries %}
+ <div class="lb-row">
+ <div class="rank {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+ {% if forloop.counter <= 3 %}
+ {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+ {% else %}{{ forloop.counter }}{% endif %}
+ </div>
+ <div>
+ {% if entry.is_public %}
+ <div class="user-name">{{ entry.username }}</div>
+ {% else %}
+ <div class="user-anon">Anonymous user</div>
+ {% endif %}
+ <div style="font-size:.72rem;color:var(--smoke);margin-top:1px">{{ entry.verdict }}</div>
+ </div>
+ <div style="text-align:center">
+ <span class="score-pill {% if entry.score >= 70 %}sc-green{% elif entry.score >= 40 %}sc-amber{% else %}sc-fire{% endif %}">
+ {{ entry.score }}/100
+ </span>
+ </div>
+ <div class="date-col" style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m)">{{ entry.date }}</div>
+ <div class="plan-col" style="font-size:.75rem;color:var(--smoke)">
+ <span class="plan-dot dot-{{ entry.plan }}"></span>{{ entry.plan|upper }}
+ </div>
+ </div>
+ {% empty %}
+ <div style="text-align:center;padding:3rem;color:var(--smoke)">No public analyses yet. Be the first! </div>
+ {% endfor %}
+ </div>
+
+ <div style="text-align:center;margin-top:1.5rem">
+ <a href="/" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border-radius:12px;font-weight:700;text-decoration:none;font-size:.9rem"> Analyze Your CV</a>
+ </div>
+</div>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

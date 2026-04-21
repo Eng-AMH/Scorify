@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CV Score {{ cv.overall_score }}/100 — Scorify</title>
+<meta property="og:title" content="My CV got {{ cv.overall_score }}/100 on Scorify!">
+<meta property="og:description" content="{{ cv.verdict }} — {{ cv.analysis_data.summary|truncatechars:150 }}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta name="twitter:card" content="summary">
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<style>
+.share-wrap{max-width:680px;margin:0 auto;padding:2rem 1.25rem}
+.share-card{background:linear-gradient(135deg,#ff6a3d,#8b5cf6);padding:3px;border-radius:20px;margin-bottom:1.5rem}
+.share-inner{background:var(--card);border-radius:18px;padding:2rem;text-align:center}
+.score-giant{font-family:var(--font-d);font-size:5rem;line-height:1;margin:.5rem 0}
+.verdict-giant{font-family:var(--font-d);font-size:1.8rem;letter-spacing:.05em;margin-bottom:1rem}
+.share-summary{color:var(--smoke);font-size:.9rem;line-height:1.6;max-width:480px;margin:0 auto 1.5rem}
+.share-meta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;font-size:.75rem;color:var(--smoke)}
+.share-meta span{background:rgba(255,255,255,.05);padding:3px 12px;border-radius:99px;border:1px solid var(--border)}
+.copy-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--smoke);cursor:pointer;font-size:.82rem;transition:.2s}
+.copy-btn:hover{border-color:var(--border2);color:var(--cream)}
+.cta-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center}
+.views-count{font-size:.75rem;color:var(--smoke);margin-top:1rem}
+</style>
+</head>
+<body style="background:var(--bg);min-height:100vh">
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<div class="share-wrap">
+ <div style="text-align:center;margin-bottom:1.5rem">
+ <a href="/" style="font-family:var(--font-d);font-size:1.4rem;color:var(--cream);text-decoration:none;letter-spacing:.05em">Scorify</a>
+ </div>
+
+ <div class="share-card">
+ <div class="share-inner">
+ <div style="font-size:.7rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.5rem">CV Analysis Result</div>
+ <div class="score-giant {% if cv.overall_score >= 70 %}text-green{% elif cv.overall_score >= 40 %}text-amber{% else %}text-fire{% endif %}"
+ style="color:{% if cv.overall_score >= 70 %}#4ade80{% elif cv.overall_score >= 40 %}#8b5cf6{% else %}#f87171{% endif %}">
+ {{ cv.overall_score }}<span style="font-size:2rem;color:var(--smoke)">/100</span>
+ </div>
+ <div class="verdict-giant" style="color:{% if cv.overall_score >= 70 %}#4ade80{% elif cv.overall_score >= 40 %}#8b5cf6{% else %}#f87171{% endif %}">
+ {{ cv.verdict }}
+ </div>
+ {% if cv.analysis_data.summary %}
+ <div class="share-summary">{{ cv.analysis_data.summary }}</div>
+ {% endif %}
+ <div class="share-meta">
+ {% if cv.analysis_data.estimated_interview_chance %}
+ <span>Interview chance: {{ cv.analysis_data.estimated_interview_chance }}</span>
+ {% endif %}
+ {% if cv.analysis_data.document_type %}
+ <span>{{ cv.analysis_data.document_type }}</span>
+ {% endif %}
+ <span>{{ cv.plan_used|upper }} analysis</span>
+ </div>
+ </div>
+ </div>
+
+ <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem">
+ <button class="copy-btn" onclick="copyLink()">📋 Copy link</button>
+ <a href="https://twitter.com/intent/tweet?text=My+CV+scored+{{ cv.overall_score }}%2F100+on+Scorify+%F0%9F%94%A5+{{ cv.verdict }}&url={{ request.build_absolute_uri|urlencode }}"
+ target="_blank" class="copy-btn" style="text-decoration:none">🐦 Share on X</a>
+ <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}"
+ target="_blank" class="copy-btn" style="text-decoration:none">💼 Share on LinkedIn</a>
+ </div>
+
+ <div class="cta-box">
+ <div style="font-size:1.1rem;font-weight:700;margin-bottom:.5rem">Get your CV roasted too! </div>
+ <div style="color:var(--smoke);font-size:.85rem;margin-bottom:1rem">AI-powered brutal honesty. Free plan available.</div>
+ <a href="/" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border-radius:12px;font-weight:700;text-decoration:none"> Analyze My CV</a>
+ </div>
+
+ <div class="views-count" style="text-align:center;margin-top:1rem">👁 {{ card.view_count }} view{{ card.view_count|pluralize }}</div>
+</div>
+
+<script>
+function copyLink() {
+ navigator.clipboard.writeText(window.location.href).then(() => {
+ const btn = event.target;
+ const orig = btn.textContent;
+ btn.textContent = '✅ Copied!';
+ setTimeout(() => btn.textContent = orig, 2000);
+ });
+}
+</script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

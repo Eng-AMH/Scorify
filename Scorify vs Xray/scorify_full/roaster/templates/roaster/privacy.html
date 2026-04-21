@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy Policy — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<style>
+.legal-wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 6rem}
+.legal-logo{display:flex;align-items:center;gap:10px;margin-bottom:3rem;text-decoration:none;color:var(--cream)}
+.legal-logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#ff6a3d,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.legal-logo-name{font-family:var(--font-d);font-size:1.3rem;letter-spacing:.05em}
+.legal-tag{display:inline-block;font-size:.7rem;font-family:var(--font-m);color:var(--smoke);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.75rem;background:rgba(255,255,255,.05);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.08)}
+.legal-title{font-family:var(--font-d);font-size:3rem;letter-spacing:.04em;margin-bottom:.5rem;background:linear-gradient(135deg,var(--fire),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.legal-updated{font-size:.8rem;color:var(--smoke);font-family:var(--font-m);margin-bottom:3rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.07)}
+.legal-section{margin-bottom:2.5rem}
+.legal-h{font-size:1.1rem;font-weight:700;color:var(--cream);margin-bottom:.875rem;display:flex;align-items:center;gap:.625rem}
+.legal-h::before{content:'';display:block;width:3px;height:1.2em;background:linear-gradient(135deg,var(--fire),var(--amber));border-radius:2px;flex-shrink:0}
+.legal-p{color:var(--smoke);font-size:.9rem;line-height:1.8;margin-bottom:.75rem}
+.legal-ul{color:var(--smoke);font-size:.9rem;line-height:1.8;margin-left:1.25rem;margin-bottom:.75rem}
+.legal-ul li{margin-bottom:.375rem}
+.legal-highlight{background:rgba(255,106,61,.07);border:1px solid rgba(255,106,61,.15);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem}
+.legal-highlight p{color:var(--cream);font-size:.875rem;margin:0}
+.data-table{width:100%;border-collapse:collapse;margin-bottom:1.25rem;font-size:.875rem}
+.data-table th{text-align:left;padding:.625rem .875rem;background:rgba(255,255,255,.04);color:var(--cream);font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)}
+.data-table td{padding:.625rem .875rem;color:var(--smoke);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.data-table tr:last-child td{border-bottom:none}
+.legal-footer{border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;margin-top:3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.legal-footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.legal-footer-links a{font-size:.8rem;color:var(--smoke);text-decoration:none;transition:.2s}
+.legal-footer-links a:hover{color:var(--fire)}
+.page-utility-bar{position:fixed;top:1rem;right:1rem;z-index:260;display:flex;align-items:center;gap:.5rem}
+</style>
+</head>
+<body>
+
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+
+<div class="legal-wrap">
+
+ <a href="/" class="legal-logo">
+ <div class="legal-logo-icon"><img class="mode-logo-img" src="/static/roaster/img/logo-scorify.png" alt="" draggable="false"></div>
+ <div class="legal-logo-name">Scorify</div>
+ </a>
+
+ <div class="legal-tag">Legal</div>
+ <div class="legal-title">PRIVACY POLICY</div>
+ <div class="legal-updated">Last updated: April 12, 2025 · Effective immediately</div>
+
+ <div class="legal-highlight">
+ <p>We take your privacy seriously. This policy explains exactly what data we collect, why we collect it, and how we protect it. We never sell your personal data.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">1. Who We Are</div>
+ <p class="legal-p">Scorify operates the website at <strong>{{ site_url }}</strong>. For privacy inquiries, contact us at: <strong>{{ support_email }}</strong></p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">2. What Data We Collect</div>
+ <table class="data-table">
+ <thead><tr><th>Data</th><th>Why we collect it</th><th>How long we keep it</th></tr></thead>
+ <tbody>
+ <tr><td><strong>Email address</strong></td><td>Account creation, login, notifications</td><td>Until you delete your account</td></tr>
+ <tr><td><strong>Username</strong></td><td>Account identification</td><td>Until you delete your account</td></tr>
+ <tr><td><strong>CV / document text</strong></td><td>AI analysis only — processed and immediately deleted</td><td>Not stored (deleted after analysis)</td></tr>
+ <tr><td><strong>Analysis results</strong></td><td>Show you your history and score trends</td><td>Until you delete your account</td></tr>
+ <tr><td><strong>IP address</strong></td><td>Security, rate limiting, fraud prevention</td><td>Max 2 hours (rate limit records)</td></tr>
+ <tr><td><strong>Payment info</strong></td><td>Processed by Paddle — we never see card details</td><td>Managed by Paddle</td></tr>
+ <tr><td><strong>Profile info</strong></td><td>Optional — job title, industry, bio (you provide these)</td><td>Until you delete your account</td></tr>
+ <tr><td><strong>Avatar image</strong></td><td>Profile display</td><td>Until you remove it</td></tr>
+ </tbody>
+ </table>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">3. How We Use Your Data</div>
+ <p class="legal-p">We use your data to:</p>
+ <ul class="legal-ul">
+ <li>Provide and improve our CV analysis service</li>
+ <li>Manage your account and subscription</li>
+ <li>Send you verification codes (OTP) and account notifications</li>
+ <li>Send weekly digest emails (you can opt out in profile settings)</li>
+ <li>Detect and prevent abuse, fraud, and spam</li>
+ <li>Display your score history and achievements</li>
+ </ul>
+ <p class="legal-p">We do <strong>not</strong> use your data to train AI models, sell advertising, or share with third parties for marketing.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">4. Your CV Files</div>
+ <p class="legal-p">When you upload a CV, here's exactly what happens:</p>
+ <ul class="legal-ul">
+ <li>The file is temporarily stored on our server (PythonAnywhere)</li>
+ <li>Text is extracted from the file</li>
+ <li>The text is sent to Groq's AI API for analysis</li>
+ <li>The original file is <strong>immediately deleted</strong> from our servers after text extraction</li>
+ <li>Only the AI-generated analysis results are saved to your account</li>
+ </ul>
+ <p class="legal-p">We do not permanently store your CV files. The extracted text sent to Groq's API is subject to <a href="https://groq.com/privacy-policy/" style="color:var(--fire)">Groq's privacy policy</a>.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">5. Third-Party Services</div>
+ <p class="legal-p">We use the following third-party services:</p>
+ <ul class="legal-ul">
+ <li><strong>Groq AI</strong> — processes CV text for analysis (groq.com)</li>
+ <li><strong>Paddle</strong> — handles all payments and subscriptions (paddle.com)</li>
+ <li><strong>PythonAnywhere</strong> — hosts our web application (pythonanywhere.com)</li>
+ <li><strong>Google Fonts</strong> — loads web fonts</li>
+ <li><strong>Google Translate</strong> — optional language translation feature</li>
+ </ul>
+ <p class="legal-p">Each service has its own privacy policy. We recommend reviewing them if you have concerns.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">6. Cookies</div>
+ <p class="legal-p">We use minimal cookies:</p>
+ <ul class="legal-ul">
+ <li><strong>Session cookie</strong> — keeps you logged in</li>
+ <li><strong>CSRF token</strong> — protects against cross-site request forgery (security)</li>
+ <li><strong>Theme preference</strong> — remembers dark/light mode</li>
+ <li><strong>Language preference</strong> — remembers your chosen language</li>
+ </ul>
+ <p class="legal-p">We do not use advertising cookies or tracking cookies from third parties.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">7. Your Rights</div>
+ <p class="legal-p">You have the right to:</p>
+ <ul class="legal-ul">
+ <li><strong>Access</strong> — request a copy of all data we hold about you</li>
+ <li><strong>Delete</strong> — request deletion of your account and all associated data</li>
+ <li><strong>Correct</strong> — update or correct your personal information at any time</li>
+ <li><strong>Portability</strong> — request your analysis history in a readable format</li>
+ <li><strong>Opt out</strong> — unsubscribe from weekly digest emails at any time</li>
+ </ul>
+ <p class="legal-p">To exercise any of these rights, email us at: <strong>{{ support_email }}</strong></p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">8. Data Security</div>
+ <p class="legal-p">We protect your data through:</p>
+ <ul class="legal-ul">
+ <li>HTTPS encryption for all data in transit</li>
+ <li>Secure password hashing (Django's PBKDF2 algorithm)</li>
+ <li>CSRF protection on all forms</li>
+ <li>Rate limiting to prevent brute-force attacks</li>
+ <li>No hardcoded secrets — all credentials stored as environment variables</li>
+ </ul>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">9. Children's Privacy</div>
+ <p class="legal-p">Our service is not directed at children under 13. We do not knowingly collect personal data from children. If you believe a child has created an account, please contact us and we will delete the account immediately.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">10. Changes to This Policy</div>
+ <p class="legal-p">We may update this privacy policy from time to time. We will notify registered users by email for significant changes. The "last updated" date at the top of this page will always reflect the most recent version.</p>
+ </div>
+
+ <div class="legal-section">
+ <div class="legal-h">11. Contact</div>
+ <p class="legal-p">Privacy questions or requests: <strong>{{ support_email }}</strong></p>
+ <p class="legal-p">We aim to respond within 72 hours.</p>
+ </div>
+
+ <div class="legal-footer">
+ <div style="font-size:.8rem;color:var(--dim)">© 2025 Scorify · All rights reserved</div>
+ <div class="legal-footer-links">
+ <a href="/terms/">Terms</a>
+ <a href="/privacy/">Privacy</a>
+ <a href="/refund/">Refund Policy</a>
+ <a href="/">← Home</a>
+ </div>
+ </div>
+
+</div>
+
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+</body>
+</html>

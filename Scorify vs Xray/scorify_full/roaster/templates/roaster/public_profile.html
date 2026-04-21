@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ profile.user.username }}'s Profile — Scorify</title>
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem">
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<div style="max-width:500px;width:100%;text-align:center">
+ <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--fire),var(--amber));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:2rem;color:#0a0804;margin:0 auto 1.5rem;overflow:hidden">
+ {% if profile.avatar %}<img src="{{ profile.avatar.url }}" style="width:100%;height:100%;object-fit:cover">{% else %}{{ profile.user.username|first|upper }}{% endif %}
+ </div>
+ <div style="font-family:var(--font-d);font-size:2rem;letter-spacing:.04em">{{ profile.user.first_name|default:profile.user.username }} {{ profile.user.last_name }}</div>
+ {% if profile.job_title %}<div style="color:var(--smoke);margin:.5rem 0">{{ profile.job_title }}</div>{% endif %}
+ {% if profile.bio %}<p style="color:var(--smoke);margin:1rem auto;line-height:1.7;max-width:360px">{{ profile.bio }}</p>{% endif %}
+ <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:1rem 0">
+ <span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+ {% if profile.best_score > 0 %}
+ <span style="background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--smoke);padding:4px 12px;border-radius:99px;font-size:.72rem;font-family:var(--font-m)">Best Score: {{ profile.best_score }}</span>
+ {% endif %}
+ </div>
+ <a href="/" class="btn btn-fire" style="margin-top:1.5rem"> Analyze Your CV Too</a>
+</div>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

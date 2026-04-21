@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ post.title }} — Scorify</title>
+<meta name="description" content="{{ post.excerpt|default:post.title }}">
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+<style>
+.post-wrap{max-width:720px;margin:0 auto;padding:2rem 1.25rem}
+.post-header{margin-bottom:2rem}
+.post-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.875rem}
+.post-tag{font-size:.72rem;padding:3px 10px;border-radius:99px;border:1px solid rgba(255,106,61,.3);color:var(--fire);background:rgba(255,106,61,.08)}
+.post-title{font-size:1.8rem;font-weight:800;color:var(--cream);line-height:1.3;margin-bottom:.75rem}
+.post-meta{display:flex;gap:1rem;font-size:.78rem;color:var(--smoke);font-family:var(--font-m);flex-wrap:wrap}
+.post-cover{border-radius:16px;width:100%;max-height:300px;object-fit:cover;margin:1.25rem 0}
+.post-content{font-size:.95rem;line-height:1.8;color:var(--cream)}
+.post-content p{margin-bottom:1rem}
+.post-content h2{font-size:1.3rem;font-weight:700;color:var(--cream);margin:1.5rem 0 .625rem;font-family:var(--font-d);letter-spacing:.02em}
+.post-content h3{font-size:1.1rem;font-weight:700;color:var(--cream);margin:1.25rem 0 .5rem}
+.post-content ul,.post-content ol{margin:0 0 1rem 1.25rem}
+.post-content li{margin-bottom:.375rem}
+.post-content code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-family:var(--font-m);font-size:.85em}
+.post-content blockquote{border-left:3px solid var(--fire);margin:1rem 0;padding:.75rem 1rem;background:rgba(255,106,61,.05);border-radius:0 10px 10px 0;color:var(--smoke);font-style:italic}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1.5rem}
+.rel-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.875rem;text-decoration:none;display:block;transition:.2s}
+.rel-card:hover{border-color:var(--border2)}
+.rel-title{font-size:.85rem;font-weight:600;color:var(--cream);line-height:1.4;margin-bottom:.25rem}
+.rel-date{font-size:.72rem;color:var(--smoke);font-family:var(--font-m)}
+</style>
+</head>
+<body style="background:var(--bg);min-height:100vh">
+<div class="page-utility-bar">
+ <div id="globeWrap"></div>
+ <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+<div class="post-wrap">
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem">
+ <a href="/blog/" style="color:var(--smoke);text-decoration:none;font-size:.82rem">← Blog</a>
+ {% if profile %}
+ <a href="/dashboard/" style="padding:8px 18px;border-radius:10px;border:1px solid var(--border);color:var(--smoke);text-decoration:none;font-size:.82rem">Dashboard</a>
+ {% else %}
+ <a href="/" style="padding:8px 18px;border-radius:10px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;text-decoration:none;font-weight:700;font-size:.82rem"> Analyze My CV</a>
+ {% endif %}
+ </div>
+
+ <div class="post-header">
+ {% if post.tag_list %}
+ <div class="post-tags">{% for t in post.tag_list %}<span class="post-tag">{{ t }}</span>{% endfor %}</div>
+ {% endif %}
+ <h1 class="post-title">{{ post.title }}</h1>
+ <div class="post-meta">
+ {% if post.author %}<span>By {{ post.author.first_name|default:post.author.username }}</span>{% endif %}
+ <span>{{ post.created_at|date:"F d, Y" }}</span>
+ <span>{{ post.read_time }} min read</span>
+ <span>{{ post.view_count }} views</span>
+ </div>
+ </div>
+
+ {% if post.cover_image %}
+ <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="post-cover">
+ {% endif %}
+
+ <div class="post-content">{{ post.content|safe }}</div>
+
+ <!-- CTA -->
+ <div style="background:linear-gradient(135deg,rgba(255,106,61,.12),rgba(139,92,246,.08));border:1px solid rgba(255,106,61,.25);border-radius:16px;padding:1.5rem;text-align:center;margin:2rem 0">
+ <div style="font-size:1.1rem;font-weight:700;margin-bottom:.25rem">Ready to get your CV roasted? </div>
+ <div style="color:var(--smoke);font-size:.85rem;margin-bottom:1rem">AI-powered brutal honesty. Free plan available.</div>
+ <a href="/" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,var(--fire),var(--amber));color:#0a0804;border-radius:12px;font-weight:700;text-decoration:none">Analyze My CV Free →</a>
+ </div>
+
+ {% if related %}
+ <div style="border-top:1px solid var(--border);padding-top:1.5rem">
+ <div style="font-family:var(--font-m);font-size:.65rem;color:var(--smoke);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.75rem">Related articles</div>
+ <div class="related-grid">
+ {% for p in related %}
+ <a href="/blog/{{ p.slug }}/" class="rel-card">
+ <div class="rel-title">{{ p.title }}</div>
+ <div class="rel-date">{{ p.created_at|date:"M d, Y" }} · {{ p.read_time }}min</div>
+ </a>
+ {% endfor %}
+ </div>
+ </div>
+ {% endif %}
+</div>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+{% load static %}
+
+<!-- Primary SEO -->
+<title>{% block title %}Free AI Resume Analyzer | Scorify{% endblock %}</title>
+
+<meta name="description" content="{% block meta_description %}Analyze your resume instantly with AI. Get ATS score, resume feedback, and smart suggestions to land interviews faster.{% endblock %}">
+
+<meta name="keywords" content="{% block meta_keywords %}AI resume analyzer,resume checker,CV review,ATS resume score,resume feedback,CV analyzer{% endblock %}">
+
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+
+<meta name="author" content="Scorify">
+<meta name="theme-color" content="#ff5a00">
+<meta name="application-name" content="Scorify">
+<meta name="apple-mobile-web-app-title" content="Scorify">
+
+<!-- Canonical -->
+<link rel="canonical" href="{% block canonical %}{{ site_url }}/{% endblock %}">
+
+<!-- Google Verification -->
+<meta name="google-site-verification" content="eVc_EbApKBZpnkhx9SakT2GxOWS9jia3t9RPP-s3p4o">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'roaster/img/scorify-favicon.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'roaster/img/scorify-favicon.png' %}">
+<link rel="icon" type="image/png" sizes="64x64" href="{% static 'roaster/img/scorify-favicon.png' %}">
+<link rel="shortcut icon" href="{% static 'roaster/img/scorify-favicon.png' %}">
+<link rel="apple-touch-icon" href="{% static 'roaster/img/scorify-favicon.png' %}">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Scorify">
+
+<meta property="og:title" content="{% block og_title %}Free AI Resume Analyzer | Scorify{% endblock %}">
+<meta property="og:description" content="{% block og_description %}Upload your resume and get brutally honest AI feedback instantly.{% endblock %}">
+<meta property="og:url" content="{% block og_url %}{{ site_url }}/{% endblock %}">
+
+{% block og_tags %}
+<meta property="og:image" content="{% static 'roaster/img/og-image.png' %}">
+<meta property="og:image:url" content="{% static 'roaster/img/og-image.png' %}">
+<meta property="og:image:secure_url" content="{% static 'roaster/img/og-image.png' %}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Scorify AI Resume Analyzer">
+{% endblock %}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% block twitter_title %}Free AI Resume Analyzer | Scorify{% endblock %}">
+<meta name="twitter:description" content="{% block twitter_description %}Get brutally honest AI resume feedback instantly.{% endblock %}">
+<meta name="twitter:image" content="{% block twitter_image %}{% static 'roaster/img/og-image.png' %}{% endblock %}">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name":"Scorify",
+  "url":"{{ site_url }}/",
+  "logo":"{% static 'roaster/img/scorify-favicon.png' %}"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebSite",
+  "name":"Scorify",
+  "url":"{{ site_url }}/",
+  "potentialAction":{
+    "@type":"SearchAction",
+    "target":"{{ site_url }}/?q={search_term_string}",
+    "query-input":"required name=search_term_string"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"SoftwareApplication",
+  "name":"Scorify",
+  "applicationCategory":"BusinessApplication",
+  "operatingSystem":"Web",
+  "offers":{
+    "@type":"Offer",
+    "price":"0",
+    "priceCurrency":"USD"
+  }
+}
+</script>
+
+<!-- CSS -->
+<link rel="stylesheet" href="{% static 'roaster/css/shared.css' %}">
+<link rel="stylesheet" href="{% static 'roaster/css/lang.css' %}">
+
+{% block extra_head %}{% endblock %}
+</head>
+
+<body{% block body_attrs %}{% endblock %}>
+<span id="userIsPro" data-pro="{{ user_is_pro|yesno:"true,false" }}" style="display:none"></span>
+
+{% block content %}{% endblock %}
+
+{% block extra_scripts %}{% endblock %}
+
+</body>
+</html>

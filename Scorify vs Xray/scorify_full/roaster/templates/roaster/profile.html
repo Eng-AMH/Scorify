@@ -1,0 +1,195 @@
+{% extends 'roaster/base.html' %}
+{% load static %}
+
+{% block title %}My Profile — Scorify{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'roaster/css/profile.css' %}">
+{% endblock %}
+
+{% block body_attrs %} class="profile-page"{% endblock %}
+
+{% block content %}
+
+<button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="Open navigation" aria-expanded="false">⋮</button>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
+
+<div class="page-utility-bar">
+  <div id="globeWrap"></div>
+  <button type="button" id="themeBtn" data-theme-toggle onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="/" class="sb-logo">
+    <div class="sb-logo-icon brand-emblem" aria-hidden="true"><span>S</span></div>
+    Scorify
+  </a>
+  <a href="/profile/" class="sb-user">
+    <div style="flex:1;min-width:0">
+      <div class="sb-user-name">{{ request.user.username }}</div>
+      <div class="sb-user-plan">
+        <span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+      </div>
+    </div>
+  </a>
+  <br>
+  <nav class="sb-nav">
+    <a href="/dashboard/" class="sb-link"><span class="sb-icon">📊</span> <span data-i18n="sb-dashboard">Dashboard</span></a>
+    <a href="/profile/"   class="sb-link active"><span class="sb-icon">👤</span> <span data-i18n="sb-profile">My Profile</span></a>
+    <a href="/compare/"   class="sb-link"><span class="sb-icon">⚖️</span> <span data-i18n="sb-compare">Compare CVs</span></a>
+    <a href="/dashboard/#uploadZone" class="sb-link"><span class="sb-icon">⚡</span> <span data-i18n="sb-newroast">New Roast</span></a>
+    <a href="/logout/" class="sb-link" style="margin-top:auto;color:#f87171"><span class="sb-icon">🚪</span> <span data-i18n="sb-logout">Logout</span></a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">MY PROFILE</div>
+  </div>
+
+  <!-- Profile header -->
+  <div class="profile-header">
+    <div class="avatar-wrap" onclick="document.getElementById('avatarInput').click()">
+      <div class="avatar-big" id="avatarDisplay">
+        {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="">
+        {% else %}{{ request.user.username|first|upper }}{% endif %}
+      </div>
+      <div class="avatar-overlay">📷 Change</div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+    </div>
+    <div class="profile-info">
+      <div class="profile-name">{{ request.user.first_name|default:request.user.username }} {{ request.user.last_name }}</div>
+      <div class="profile-email">{{ request.user.email }}</div>
+      <div class="profile-meta">
+        <span class="badge badge-{{ profile.plan }}">{{ profile.plan_badge }} {{ profile.plan|upper }}</span>
+        <span style="font-size:.82rem;color:var(--smoke)">{{ profile.total_uploads }} CVs roasted</span>
+        {% if profile.best_score > 0 %}
+        <span style="font-size:.82rem;color:var(--smoke)">Best: <strong style="color:var(--fire)">{{ profile.best_score }}</strong></span>
+        {% endif %}
+      </div>
+      <div style="margin-top:.875rem">
+        <div class="completion-label">Profile {{ profile.profile_completion }}% Complete</div>
+        <div class="completion-track" style="max-width:200px">
+          <div class="completion-fill" style="width:{{ profile.profile_completion }}%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="successMsg" class="success-msg">✅ Profile updated successfully!</div>
+
+  <!-- Edit form -->
+  <div class="card">
+    <div class="card-title">✏️ Edit Profile</div>
+    <form id="profileForm">
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first_name" class="form-input" value="{{ request.user.first_name }}" placeholder="Your first name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last_name" class="form-input" value="{{ request.user.last_name }}" placeholder="Your last name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Job Title</label>
+          <input type="text" name="job_title" class="form-input" value="{{ profile.job_title }}" placeholder="e.g. Software Engineer">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Industry</label>
+          <input type="text" name="industry" class="form-input" value="{{ profile.industry }}" placeholder="e.g. Technology">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label class="form-label">Bio</label>
+          <textarea name="bio" class="form-textarea" placeholder="Tell us about yourself (max 300 chars)">{{ profile.bio }}</textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label class="form-label">Career Goal</label>
+          <input type="text" name="career_goal" class="form-input" value="{{ profile.career_goal }}" placeholder="e.g. Become a senior developer at a top tech company">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label class="form-label">Skills (comma-separated)</label>
+          <input type="text" name="skills_tags" class="form-input" value="{{ profile.skills_tags }}" placeholder="Python, React, Machine Learning, ...">
+        </div>
+      </div>
+      <div style="margin-bottom:1.5rem">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Public Profile</div>
+            <div class="toggle-desc">Allow others to view your profile at /u/{{ request.user.username }}/</div>
+          </div>
+          <label class="toggle-wrap">
+            <input type="checkbox" name="public_profile" {% if profile.public_profile %}checked{% endif %}>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <button type="button" class="save-btn" onclick="saveProfile()">💾 Save Profile</button>
+    </form>
+  </div>
+
+  <!-- Achievements -->
+  <div class="card">
+    <div class="card-title">🏆 Achievements</div>
+    <div class="badges">
+      {% for badge in profile.achievements %}
+      <div class="badge-item" title="{{ badge.desc }}">
+        {{ badge.icon }} {{ badge.name }}
+        <span class="badge-desc">· {{ badge.desc }}</span>
+      </div>
+      {% empty %}
+      <div style="color:var(--smoke);font-size:.875rem">Upload CVs to earn badges!</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- CV History -->
+  <div class="card">
+    <div class="card-title">📁 All CV History</div>
+    {% if analyses %}
+    <div class="mini-history">
+      {% for a in analyses %}
+      <div class="mini-card">
+        <div class="mini-score {% if a.overall_score < 40 %}sc-f{% elif a.overall_score < 65 %}sc-a{% else %}sc-g{% endif %}"
+             style="border-color:{% if a.overall_score < 40 %}rgba(248,113,113,.4){% elif a.overall_score < 65 %}rgba(139,92,246,.4){% else %}rgba(74,222,128,.35){% endif %};background:{% if a.overall_score < 40 %}rgba(248,113,113,.07){% elif a.overall_score < 65 %}rgba(139,92,246,.07){% else %}rgba(74,222,128,.07){% endif %}">
+          {{ a.overall_score|default:"—" }}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.original_filename }}</div>
+          <div style="font-size:.75rem;color:var(--smoke);font-family:var(--font-m)">
+            {{ a.created_at|date:"M d, Y · H:i" }} ·
+            <span style="display:inline-block;padding:1px 7px;border-radius:99px;font-size:.6rem;font-weight:700;background:rgba(100,116,139,.15);color:#94a3b8">{{ a.plan_used|upper }}</span>
+          </div>
+        </div>
+        <div style="font-family:var(--font-d);font-size:.9rem;color:var(--smoke)">{{ a.verdict }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:2rem;color:var(--smoke)">
+      No CVs yet. <a href="/" style="color:var(--fire)">Upload your first CV →</a>
+    </div>
+    {% endif %}
+  </div>
+</main>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'roaster/js/shared.js' %}"></script>
+<script src="{% static 'roaster/js/profile.js' %}"></script>
+<script src="{% static 'roaster/js/lang.js' %}"></script>
+<script src="{% static 'roaster/js/mode.js' %}"></script>
+<script src="{% static 'roaster/js/cursor.js' %}"></script>
+{% endblock %}
