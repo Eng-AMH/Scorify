@@ -2,7 +2,6 @@
 
 <br/>
 
-<img src="roaster/static/roaster/img/logo-scorify.png" width="96" alt="Scorify Logo"/>
 
 # Scorify
 
